@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const utils_1 = require("../utils");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const schema = new mongoose_1.default.Schema({
     username: {
         type: String,
@@ -27,7 +28,7 @@ const schema = new mongoose_1.default.Schema({
         validate: {
             validator(value) {
                 if (typeof value === "string")
-                    return (0, utils_1.validateEmail)(value);
+                    return utils_1.validateEmail(value);
                 return false;
             },
             message: "Please provide a valid email id",
@@ -45,16 +46,20 @@ const schema = new mongoose_1.default.Schema({
                 const user = this;
                 return value === user.password;
             },
+            message: "Password confirm is not matched with password",
         },
     },
 });
-const User = mongoose_1.default.model("User", schema);
 schema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!this.isModified("password"))
             return next();
+        // hash the password
+        this.password = yield bcrypt_1.default.hash(this.password, 12);
+        // remove the passwordConfirm field from the module
         this.passwordConfirm = undefined;
         next();
     });
 });
+const User = mongoose_1.default.model("User", schema);
 exports.default = User;

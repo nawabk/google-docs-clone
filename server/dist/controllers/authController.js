@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.signup = void 0;
 const userModel_1 = __importDefault(require("../models/userModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
-exports.signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.signup = catchAsync_1.default((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const newUser = yield userModel_1.default.create(req.body);
     res.status(201).json({
         status: "success",

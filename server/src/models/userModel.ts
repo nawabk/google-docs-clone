@@ -1,5 +1,6 @@
-import mongoose, { Schema, Document, InferSchemaType } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import { validateEmail } from "../utils";
+import bcyrpt from "bcrypt";
 
 interface IUser extends Document {
   username: string;
@@ -39,15 +40,20 @@ const schema: Schema = new mongoose.Schema<IUser>({
         const user = this as IUser;
         return value === user.password;
       },
+      message: "Password confirm is not matched with password",
     },
   },
 });
 
-const User = mongoose.model("User", schema);
 schema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) return next();
+  // hash the password
+  this.password = await bcyrpt.hash(this.password, 12);
+  // remove the passwordConfirm field from the module
   this.passwordConfirm = undefined;
   next();
 });
+
+const User = mongoose.model("User", schema);
 
 export default User;
