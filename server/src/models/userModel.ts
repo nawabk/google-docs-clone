@@ -2,12 +2,13 @@ import mongoose, { Schema, Document } from "mongoose";
 import { validateEmail } from "../utils";
 import bcyrpt from "bcrypt";
 
-interface IUser extends Document {
+export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
   passwordConfirm?: string;
   age: number;
+  isEmailVerified?: boolean;
 }
 
 const schema: Schema = new mongoose.Schema<IUser>({
@@ -31,7 +32,7 @@ const schema: Schema = new mongoose.Schema<IUser>({
   password: {
     type: String,
     required: [true, "Please provide a password"],
-    min: [8, "Password length should be 8"],
+    min: [6, "Password length should be 6"],
   },
   passwordConfirm: {
     type: String,
@@ -40,8 +41,12 @@ const schema: Schema = new mongoose.Schema<IUser>({
         const user = this as IUser;
         return value === user.password;
       },
-      message: "Password confirm is not matched with password",
+      message: "Password Confirm does not match with password",
     },
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
   },
 });
 

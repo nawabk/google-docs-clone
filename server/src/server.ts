@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import app from "./app";
 
 dotenv.config();
+import app from "./app";
 
 let mongoUrl = process.env.MONGODB_URL!;
 const password = process.env.PASSWORD!;

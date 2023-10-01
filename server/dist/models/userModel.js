@@ -37,7 +37,7 @@ const schema = new mongoose_1.default.Schema({
     password: {
         type: String,
         required: [true, "Please provide a password"],
-        min: [8, "Password length should be 8"],
+        min: [6, "Password length should be 6"],
     },
     passwordConfirm: {
         type: String,
@@ -46,8 +46,12 @@ const schema = new mongoose_1.default.Schema({
                 const user = this;
                 return value === user.password;
             },
-            message: "Password confirm is not matched with password",
+            message: "Password Confirm does not match with password",
         },
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false,
     },
 });
 schema.pre("save", function (next) {
