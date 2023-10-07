@@ -4,8 +4,12 @@ import User, { IUser } from "../models/userModel";
 import catchAsync from "../utils/catchAsync";
 import sendEmail, { EmailType } from "../utils/sendEmail";
 import { ERROR_MESSAGE } from "../constants";
-import { isValidBody } from "../utils";
-import { CreateUserSchema } from "../schema/userSchema";
+import {
+  CreateUserSchema,
+  ResendTokenInput,
+  VerifyUserInput,
+} from "../schema/userSchema";
+import AppError from "../utils/appError";
 
 export const signup = catchAsync(
   async (
@@ -27,16 +31,15 @@ export const signup = catchAsync(
   }
 );
 
-export const verifyUser = catchAsync(
-  async (
-    req: Request,
-    res: Response<{ status: string; message: string }>,
-    next: NextFunction
-  ) => {
-    const body = req.body as { userId: string; token: string };
+export const verifyUser = async (
+  req: Request<VerifyUserInput["params"], {}, VerifyUserInput["body"]>,
+  res: Response<{ status: string; message: string }>,
+  next: NextFunction
+) => {
+  try {
     const token = await Token.findOne({
       userId: req.params.userId,
-      token: req.query.token,
+      token: req.body.token,
     });
     if (!token) {
       return res.status(400).json({
@@ -48,5 +51,30 @@ export const verifyUser = catchAsync(
     res
       .status(201)
       .json({ status: "success", message: "Your email is verified" });
+  } catch (e) {
+    next(e);
   }
-);
+};
+
+export const resendVerificationToken = async (
+  req: Request<ResendTokenInput["params"]>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = (await User.findOne({ _id: req.params.userId })) as IUser;
+    if (!user) return next(new AppError("User doest not exist", 404));
+    const newToken = (await Token.create({ userId: user._id })) as IToken;
+    await sendEmail({
+      to: user.email,
+      message: newToken.token,
+      emailType: EmailType.EMAIL_VERIFICATION,
+    });
+    res.status(201).json({
+      status: "success",
+      message: "Another verification link has been sent to your email address.",
+    });
+  } catch (e) {
+    next(e);
+  }
+};

@@ -6,10 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const appError_1 = __importDefault(require("../utils/appError"));
 // import { MongooseError } from "mongoose";
 const mongodb_1 = require("mongodb");
+const mongoose_1 = require("mongoose");
 const hanldeDuplicateFieldsDB = (err) => {
-    console.log(err.message);
     const valueArr = err.message.match(/email: '([^']+)'/);
-    console.log(valueArr);
     let message = "Something went wrong", statusCode = 500;
     if (valueArr === null || valueArr === void 0 ? void 0 : valueArr.length) {
         const value = valueArr[1];
@@ -35,6 +34,13 @@ const errorController = (err, _1, res, _2) => {
             message = modifiedErr.message;
         }
     }
+    else if (err instanceof mongoose_1.MongooseError) {
+        message = err.message;
+    }
+    else if (err instanceof Error) {
+        message = err.message;
+    }
+    console.log({ message });
     res.status(statusCode).json({ status, message });
 };
 exports.default = errorController;

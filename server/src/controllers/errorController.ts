@@ -2,6 +2,7 @@ import type { ErrorRequestHandler } from "express";
 import AppError from "../utils/appError";
 // import { MongooseError } from "mongoose";
 import { MongoError } from "mongodb";
+import { MongooseError } from "mongoose";
 
 type ErrorResponse = {
   status: string;
@@ -9,9 +10,7 @@ type ErrorResponse = {
 };
 
 const hanldeDuplicateFieldsDB = (err: MongoError): AppError => {
-  console.log(err.message);
   const valueArr = err.message.match(/email: '([^']+)'/);
-  console.log(valueArr);
   let message = "Something went wrong",
     statusCode = 500;
   if (valueArr?.length) {
@@ -30,6 +29,7 @@ const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
   let statusCode = 500,
     status = "error",
     message = "Something went wrong";
+
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
@@ -39,8 +39,12 @@ const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
       statusCode = modifiedErr.statusCode;
       message = modifiedErr.message;
     }
+  } else if (err instanceof MongooseError) {
+    message = err.message;
+  } else if (err instanceof Error) {
+    message = err.message;
   }
-
+  console.log({ message });
   res.status(statusCode).json({ status, message });
 };
 
