@@ -51,3 +51,18 @@ export type VerifyUserInput = z.infer<typeof verifyUserInput>;
 export const resendTokenInput = userParamsBase;
 
 export type ResendTokenInput = z.infer<typeof resendTokenInput>;
+
+export const signInInput = z.object({
+  body: z.object({
+    email: z
+      .string({
+        required_error: "Email is required.",
+      })
+      .email("Please provide a valid email."),
+    password: z.string({
+      required_error: "Please provide a passwword.",
+    }),
+  }),
+});
+
+export type SignInInput = z.infer<typeof signInInput>;

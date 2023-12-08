@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateResource = void 0;
 const zod_1 = require("zod");
-const validateResource = (schmea) => (req, res, next) => {
+const validateResource = (schema) => (req, res, next) => {
     try {
-        schmea.parse({
+        schema.parse({
             body: req.body,
             query: req.query,
             params: req.params,

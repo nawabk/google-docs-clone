@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resendTokenInput = exports.verifyUserInput = exports.createUserSchema = void 0;
+exports.signInInput = exports.resendTokenInput = exports.verifyUserInput = exports.createUserSchema = void 0;
 const zod_1 = require("zod");
 exports.createUserSchema = zod_1.z.object({
     body: zod_1.z
@@ -44,3 +44,15 @@ exports.verifyUserInput = zod_1.z
 })
     .merge(userParamsBase);
 exports.resendTokenInput = userParamsBase;
+exports.signInInput = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z
+            .string({
+            required_error: "Email is required.",
+        })
+            .email("Please provide a valid email."),
+        password: zod_1.z.string({
+            required_error: "Please provide a passwword.",
+        }),
+    }),
+});

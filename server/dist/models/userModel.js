@@ -65,5 +65,10 @@ schema.pre("save", function (next) {
         next();
     });
 });
+schema.methods.verifyPassword = function (userPassword, candidatePassword) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return bcrypt_1.default.compare(candidatePassword, userPassword);
+    });
+};
 const User = mongoose_1.default.model("User", schema);
 exports.default = User;

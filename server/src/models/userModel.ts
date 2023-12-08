@@ -59,6 +59,13 @@ schema.pre<IUser>("save", async function (next) {
   next();
 });
 
+schema.methods.verifyPassword = async function (
+  userPassword: string,
+  candidatePassword: string
+) {
+  return bcyrpt.compare(candidatePassword, userPassword);
+};
+
 const User = mongoose.model("User", schema);
 
 export default User;

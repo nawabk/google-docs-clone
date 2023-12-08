@@ -31,7 +31,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resendVerificationToken = exports.verifyUser = exports.signup = void 0;
+exports.signIn = exports.resendVerificationToken = exports.verifyUser = exports.signup = void 0;
 const tokenModel_1 = __importDefault(require("../models/tokenModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
@@ -94,3 +94,21 @@ const resendVerificationToken = (req, res, next) => __awaiter(void 0, void 0, vo
     }
 });
 exports.resendVerificationToken = resendVerificationToken;
+const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password } = req.body;
+        const user = yield userModel_1.default.findOne({ email });
+        if (!user)
+            throw new appError_1.default("User does not exist.", 400);
+        if (!user.isEmailVerified)
+            throw new appError_1.default("Please verify the user.", 400);
+        res.send(200).json({
+            status: "success",
+            message: "Well Done!",
+        });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+exports.signIn = signIn;

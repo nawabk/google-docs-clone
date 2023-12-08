@@ -7,6 +7,7 @@ import { ERROR_MESSAGE } from "../constants";
 import {
   CreateUserSchema,
   ResendTokenInput,
+  SignInInput,
   VerifyUserInput,
 } from "../schema/userSchema";
 import AppError from "../utils/appError";
@@ -73,6 +74,26 @@ export const resendVerificationToken = async (
     res.status(201).json({
       status: "success",
       message: "Another verification link has been sent to your email address.",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const signIn = async (
+  req: Request<{}, {}, SignInInput["body"]>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne<IUser>({ email });
+    if (!user) throw new AppError("User does not exist.", 400);
+    if (!user.isEmailVerified)
+      throw new AppError("Please verify the user.", 400);
+    res.send(200).json({
+      status: "success",
+      message: "Well Done!",
     });
   } catch (e) {
     next(e);
