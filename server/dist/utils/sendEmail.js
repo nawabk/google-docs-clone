@@ -15,7 +15,7 @@ const resend = new resend_1.Resend(process.env.RESEND_API);
 var EmailType;
 (function (EmailType) {
     EmailType[EmailType["EMAIL_VERIFICATION"] = 0] = "EMAIL_VERIFICATION";
-})(EmailType = exports.EmailType || (exports.EmailType = {}));
+})(EmailType || (exports.EmailType = EmailType = {}));
 function default_1({ to, message, emailType }) {
     return __awaiter(this, void 0, void 0, function* () {
         try {

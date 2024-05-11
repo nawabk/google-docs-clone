@@ -1,13 +1,12 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { validateEmail } from "../utils";
 import bcyrpt from "bcrypt";
+import mongoose, { Document, Schema } from "mongoose";
+import { validateEmail } from "../utils";
 
 export interface IUser extends Document {
   username: string;
   email: string;
   password: string;
   passwordConfirm?: string;
-  age: number;
   isEmailVerified?: boolean;
 }
 

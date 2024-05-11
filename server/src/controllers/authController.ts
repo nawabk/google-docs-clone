@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+import { ERROR_MESSAGE } from "../constants";
 import Token, { IToken } from "../models/tokenModel";
 import User, { IUser } from "../models/userModel";
-import catchAsync from "../utils/catchAsync";
-import sendEmail, { EmailType } from "../utils/sendEmail";
-import { ERROR_MESSAGE } from "../constants";
 import {
   CreateUserSchema,
   ResendTokenInput,
@@ -11,6 +9,8 @@ import {
   VerifyUserInput,
 } from "../schema/userSchema";
 import AppError from "../utils/appError";
+import catchAsync from "../utils/catchAsync";
+import sendEmail, { EmailType } from "../utils/sendEmail";
 
 export const signup = catchAsync(
   async (

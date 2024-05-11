@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const utils_1 = require("../utils");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const schema = new mongoose_1.default.Schema({
     username: {
         type: String,
@@ -28,7 +28,7 @@ const schema = new mongoose_1.default.Schema({
         validate: {
             validator(value) {
                 if (typeof value === "string")
-                    return utils_1.validateEmail(value);
+                    return (0, utils_1.validateEmail)(value);
                 return false;
             },
             message: "Please provide a valid email id",
