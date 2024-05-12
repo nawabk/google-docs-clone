@@ -42,13 +42,21 @@ const Label = ({ children, ...rest }: ComponentProps<"label">) => {
 const Input = ({
   children,
   className = "",
+  errorMessage = "",
   ...rest
-}: ComponentProps<"input"> & { className?: string }) => {
+}: ComponentProps<"input"> & { className?: string; errorMessage?: string }) => {
   const classNames = [
-    "border border-gray-400 px-2 py-1 h-10 rounded-lg focus:border-blue-500 focus:border-2 focus:outline-none",
+    "border border-gray-400 px-2 py-1 h-10 rounded-lg focus:border-blue-500 focus:border-2 focus:outline-none w-full",
   ];
   if (className) classNames.push(className);
-  return <input className={classNames.join(" ")} {...rest} />;
+  return (
+    <div className="flex flex-col">
+      <input className={classNames.join(" ")} {...rest} />
+      {errorMessage && (
+        <span className="text-red-600 text-xs mt-1">{errorMessage}</span>
+      )}
+    </div>
+  );
 };
 
 const Button = ({ children, ...rest }: ComponentProps<"button">) => {
