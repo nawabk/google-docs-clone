@@ -1,16 +1,18 @@
 import { FormValidationResult, ValidationRule } from "../types/auth";
 
-export function validateForm<T>({
+export function validateForm<FormValue>({
   validationRule,
   formData,
 }: {
   validationRule: ValidationRule;
   formData: FormData;
-}): FormValidationResult<T> {
+}): FormValidationResult<FormValue> {
   let isFormValid = true;
   let errorMessage: Record<string, string> = {};
-  let formValue: Record<string, string | undefined> = {};
-  for (const [input, rule] of Object.entries(validationRule)) {
+  let formValue: FormValue = {} as FormValue;
+  for (const entries of Object.entries(validationRule)) {
+    const input = entries[0];
+    const rule = entries[1] as ValidationRule[keyof typeof validationRule];
     const value = formData.get(input)?.toString();
     const { type, required } = rule;
 
@@ -30,12 +32,12 @@ export function validateForm<T>({
         }
       }
     }
-    formValue[input] = value;
+    formValue[input as keyof FormValue] = value as FormValue[keyof FormValue];
   }
   return {
     isFormValid,
     errorMessage,
-    formValue: formValue as T,
+    formValue: formValue,
   };
 }
 

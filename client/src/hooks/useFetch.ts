@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { APIResponse, ErrorResponse } from "../types/common";
 
-type PostAndPutProps = {
+type PostAndPutProps<RequestBody> = {
   method: "POST" | "PUT";
-  body: Record<string, unknown>;
+  body: RequestBody;
 };
-type Props =
+type Props<RequestBody> =
   | {
       url: string;
       returnResponse?: boolean;
@@ -14,7 +14,7 @@ type Props =
       | {
           method?: "GET" | "DELETE";
         }
-      | PostAndPutProps
+      | PostAndPutProps<RequestBody>
     );
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -32,7 +32,9 @@ const useFetch = () => {
   const [responseData, setResponseData] = useState<unknown>(null);
   const [error, setError] = useState<string>("");
 
-  async function apiCall<T>(props: Props): Promise<APIResponse<T> | undefined> {
+  async function apiCall<ResponseBody, RequestBody = {}>(
+    props: Props<RequestBody>
+  ): Promise<APIResponse<ResponseBody> | undefined> {
     const { method, url } = props;
     let { setResponseDataState = true, returnResponse = false } = props;
     if (method === "POST" || method === "PUT") {
@@ -50,7 +52,7 @@ const useFetch = () => {
           body: JSON.stringify(props.body),
         }),
       });
-      const responseData = (await response.json()) as APIResponse<T>;
+      const responseData = (await response.json()) as APIResponse<ResponseBody>;
       if (response.ok) {
         setStatus("success");
         if (returnResponse) return responseData;

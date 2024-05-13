@@ -1,8 +1,12 @@
 import { useState } from "react";
-// import AuthForm from "./AuthForm";
 import { ENDPOINT } from "../../constants";
+import { signupValidationRule } from "../../constants/auth";
 import useFetch from "../../hooks/useFetch";
-import { SignUpResponse, ValidationRule } from "../../types/auth";
+import {
+  SignUpFormValue,
+  SignUpRequest,
+  SignUpResponse,
+} from "../../types/auth";
 import { validateForm } from "../../utils";
 import AuthForm from "./AuthForm";
 
@@ -15,25 +19,6 @@ const Signup = () => {
     useState(false);
   const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
   const { status, apiCall, error } = useFetch();
-  console.log(status, error);
-  const validationRule: ValidationRule = {
-    username: {
-      type: "text",
-      required: true,
-    },
-    email: {
-      type: "email",
-      required: true,
-    },
-    password: {
-      type: "password",
-      required: true,
-    },
-    passwordConfirm: {
-      type: "password",
-      required: true,
-    },
-  };
 
   const passwordConfirmHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsPasswordConfirmTouched(true);
@@ -53,18 +38,17 @@ const Signup = () => {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
-    const { isFormValid, errorMessage, formValue } = validateForm<
-      Record<keyof typeof validationRule, string>
-    >({
-      validationRule,
-      formData,
-    });
+    const { isFormValid, errorMessage, formValue } =
+      validateForm<SignUpFormValue>({
+        validationRule: signupValidationRule,
+        formData,
+      });
     if (!isFormValid) {
       setErrorMessage(errorMessage);
       return;
     }
     setErrorMessage({});
-    apiCall<SignUpResponse>({
+    apiCall<SignUpResponse, SignUpRequest>({
       url: ENDPOINT.BASE + ENDPOINT.AUTH.SING_UP,
       returnResponse: true,
       method: "POST",

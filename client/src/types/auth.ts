@@ -1,5 +1,7 @@
-export type ValidationRule = Record<
-  string,
+import { signupValidationRule } from "../constants/auth";
+
+export type ValidationRule<T = {}> = Record<
+  keyof T,
   {
     type: "email" | "password" | "text" | "number";
     required: boolean;
@@ -17,3 +19,12 @@ export type SignUpResponse = {
   isEmail: string;
   isEmailVerified: boolean;
 };
+
+export type SignUpRequest = {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+};
+
+export type SignUpFormValue = Record<keyof typeof signupValidationRule, string>;
