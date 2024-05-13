@@ -7,7 +7,7 @@ export const signupValidationRule: ValidationRule<{
   passwordConfirm: string;
 }> = {
   username: {
-    type: "email",
+    type: "text",
     required: true,
   },
   email: {

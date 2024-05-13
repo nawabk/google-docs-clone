@@ -4,6 +4,7 @@ type State = {
   isAuthenticated: boolean;
   username: string;
   email: string;
+  isEmailVerified: boolean;
 };
 
 type Action = {
@@ -11,6 +12,7 @@ type Action = {
   payload: {
     username: string;
     email: string;
+    isEmailVerified: boolean;
   };
 };
 
@@ -37,6 +39,7 @@ const initialState: State = {
   isAuthenticated: false,
   username: "",
   email: "",
+  isEmailVerified: false,
 };
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);

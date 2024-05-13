@@ -1,5 +1,6 @@
+import { faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ComponentProps } from "react";
-
 const AuthForm = ({
   children,
   heading,
@@ -59,15 +60,22 @@ const Input = ({
   );
 };
 
-const Button = ({ children, ...rest }: ComponentProps<"button">) => {
+type ButtonProps = ComponentProps<"button"> & {
+  loading?: boolean;
+};
+const Button = ({ children, loading = false, ...rest }: ButtonProps) => {
   return (
-    <div className="mt-10">
+    <div className="mt-8">
       <button
         type="submit"
-        className="p-2 text-center w-full bg-blue-600 text-white rounded-md hover:bg-blue-500"
+        className="p-2 text-center w-full bg-blue-600 text-white rounded-md hover:bg-blue-500 disabled:bg-blue-400"
+        disabled={loading}
         {...rest}
       >
         {children}
+        {loading && (
+          <FontAwesomeIcon icon={faCircleNotch} spin className="ml-2" />
+        )}
       </button>
     </div>
   );

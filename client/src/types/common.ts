@@ -3,7 +3,7 @@ export type ErrorResponse = {
   message: string;
 };
 
-type SuccessfullResponse<T> = {
+export type SuccessfullResponse<T> = {
   status: "success";
   data: T;
 };

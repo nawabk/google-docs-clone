@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { APIResponse, ErrorResponse } from "../types/common";
+import {
+  APIResponse,
+  ErrorResponse,
+  SuccessfullResponse,
+} from "../types/common";
 
 type PostAndPutProps<RequestBody> = {
   method: "POST" | "PUT";
@@ -8,8 +12,6 @@ type PostAndPutProps<RequestBody> = {
 type Props<RequestBody> =
   | {
       url: string;
-      returnResponse?: boolean;
-      setResponseDataState?: boolean;
     } & (
       | {
           method?: "GET" | "DELETE";
@@ -27,22 +29,23 @@ function isErrorMessage<T>(
   );
 }
 
+function isSuccessfullResponse<T>(
+  response: APIResponse<T>
+): response is SuccessfullResponse<T> {
+  return "data" in response && response.status === "success";
+}
+
 const useFetch = () => {
   const [status, setStatus] = useState<Status>("idle");
-  const [responseData, setResponseData] = useState<unknown>(null);
   const [error, setError] = useState<string>("");
 
   async function apiCall<ResponseBody, RequestBody = {}>(
     props: Props<RequestBody>
-  ): Promise<APIResponse<ResponseBody> | undefined> {
+  ): Promise<SuccessfullResponse<ResponseBody>["data"] | undefined> {
     const { method, url } = props;
-    let { setResponseDataState = true, returnResponse = false } = props;
-    if (method === "POST" || method === "PUT") {
-      setResponseDataState = false;
-      returnResponse = true;
-    }
     try {
       setStatus("loading");
+      setError("");
       const response = await fetch(url, {
         method,
         headers: {
@@ -55,8 +58,10 @@ const useFetch = () => {
       const responseData = (await response.json()) as APIResponse<ResponseBody>;
       if (response.ok) {
         setStatus("success");
-        if (returnResponse) return responseData;
-        if (setResponseDataState) setResponseData(responseData);
+        if (isSuccessfullResponse(responseData)) {
+          return responseData.data;
+        }
+        return;
       } else {
         setStatus("error");
         if (isErrorMessage(responseData)) {
@@ -75,7 +80,7 @@ const useFetch = () => {
     }
   }
 
-  return { status, responseData, error, apiCall };
+  return { status, error, apiCall };
 };
 
 export default useFetch;

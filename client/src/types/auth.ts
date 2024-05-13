@@ -16,7 +16,7 @@ export type FormValidationResult<T> = {
 
 export type SignUpResponse = {
   username: string;
-  isEmail: string;
+  email: string;
   isEmailVerified: boolean;
 };
 
@@ -28,3 +28,5 @@ export type SignUpRequest = {
 };
 
 export type SignUpFormValue = Record<keyof typeof signupValidationRule, string>;
+
+export type CurrentAuthForm = "signup" | "signin";

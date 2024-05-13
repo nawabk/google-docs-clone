@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { ENDPOINT } from "../../constants";
 import { signupValidationRule } from "../../constants/auth";
+import { useAuthContext } from "../../context/auth-context";
 import useFetch from "../../hooks/useFetch";
 import {
+  CurrentAuthForm,
   SignUpFormValue,
   SignUpRequest,
   SignUpResponse,
 } from "../../types/auth";
 import { validateForm } from "../../utils";
 import AuthForm from "./AuthForm";
+import SwitchForm from "./SwitchForm";
 
-const Signup = () => {
+type Props = {
+  setCurrentAuthForm: Dispatch<SetStateAction<CurrentAuthForm>>;
+};
+const Signup = ({ setCurrentAuthForm }: Props) => {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [isPasswordConfirmCorrect, setIsPasswordConfirmCorrect] =
@@ -18,6 +24,7 @@ const Signup = () => {
   const [isPasswordConfirmTouched, setIsPasswordConfirmTouched] =
     useState(false);
   const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
+  const { dispatch } = useAuthContext();
   const { status, apiCall, error } = useFetch();
 
   const passwordConfirmHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +40,7 @@ const Signup = () => {
     setPassword(value);
   };
 
-  const formSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const formSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -48,14 +55,19 @@ const Signup = () => {
       return;
     }
     setErrorMessage({});
-    apiCall<SignUpResponse, SignUpRequest>({
+    const data = await apiCall<SignUpResponse, SignUpRequest>({
       url: ENDPOINT.BASE + ENDPOINT.AUTH.SING_UP,
-      returnResponse: true,
       method: "POST",
       body: {
         ...formValue,
       },
     });
+    if (data) {
+      dispatch({
+        type: "SET_USER",
+        payload: data,
+      });
+    }
   };
   return (
     <AuthForm heading="Sign up">
@@ -113,7 +125,16 @@ const Signup = () => {
             errorMessage={errorMessage["passwordConfirm"]}
           />
         </AuthForm.InputGroup>
-        <AuthForm.Button>Sign up</AuthForm.Button>
+        <AuthForm.Button loading={status === "loading"}>
+          Sign up
+        </AuthForm.Button>
+        <SwitchForm
+          currentAuthForm="signup"
+          setCurrentAuthForm={setCurrentAuthForm}
+        />
+        <span className="text-red-600 text-sm mt-1 flex justify-center font-bold">
+          {error}
+        </span>
       </AuthForm.Form>
     </AuthForm>
   );

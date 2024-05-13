@@ -1,8 +1,20 @@
+import { useState } from "react";
+import { CurrentAuthForm } from "../../types/auth";
+import SignIn from "./SignIn";
 import Signup from "./Signup";
 
 const Auth = () => {
+  const [currentAuthForm, setCurrentAuthForm] =
+    useState<CurrentAuthForm>("signup");
   return (
-    <Signup />
+    <>
+      {currentAuthForm === "signup" && (
+        <Signup setCurrentAuthForm={setCurrentAuthForm} />
+      )}
+      {currentAuthForm === "signin" && (
+        <SignIn setCurrentAuthForm={setCurrentAuthForm} />
+      )}
+    </>
     // <div className="col-span-full justify-self-center mt-20 w-1/3 shadow-lg rounded-lg p-9">
     //   <h2 className="text-3xl text-center font-semi-bold">Sign up</h2>
     //   <form className="mt-10">
