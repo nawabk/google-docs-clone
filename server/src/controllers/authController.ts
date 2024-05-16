@@ -20,9 +20,10 @@ export const signup = catchAsync(
   ) => {
     const newUser = (await User.create(req.body)) as IUser;
     const newToken = (await Token.create({ userId: newUser._id })) as IToken;
+    const message = `${process.env.CLIENT_URL}/verify_email?userId=${newUser._id}&token=${newToken.token}`;
     sendEmail({
       to: newUser.email,
-      message: newToken.token,
+      message,
       emailType: EmailType.EMAIL_VERIFICATION,
     });
     res.status(201).json({

@@ -8,7 +8,7 @@ const appError_1 = __importDefault(require("../utils/appError"));
 const mongodb_1 = require("mongodb");
 const mongoose_1 = require("mongoose");
 const hanldeDuplicateFieldsDB = (err) => {
-    const valueArr = err.message.match(/email: '([^']+)'/);
+    const valueArr = err.message.match(/email: "([^"]+)"/);
     let message = "Something went wrong", statusCode = 500;
     if (valueArr === null || valueArr === void 0 ? void 0 : valueArr.length) {
         const value = valueArr[1];
@@ -23,6 +23,7 @@ const errorController = (err, _1, res, _2) => {
         message: err.message || "Something went wrong",
     };
     let statusCode = 500, status = "error", message = "Something went wrong";
+    console.log(err);
     if (err instanceof appError_1.default) {
         statusCode = err.statusCode;
         message = err.message;

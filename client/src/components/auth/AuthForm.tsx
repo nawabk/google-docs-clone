@@ -9,7 +9,7 @@ const AuthForm = ({
   heading: string;
 }) => {
   return (
-    <div className="col-span-full justify-self-center mt-20 w-1/3 shadow-lg rounded-lg p-9">
+    <div className="col-span-full justify-self-center mt-20 w-1/3 shadow-lg rounded-lg px-10 py-6">
       <h2 className="text-3xl text-center font-semi-bold">{heading}</h2>
       {children}
     </div>

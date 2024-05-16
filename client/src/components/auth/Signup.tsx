@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import { ENDPOINT } from "../../constants";
+import { ENDPOINT, VERIFY_SIGNUP_MESSAGE } from "../../constants";
 import { signupValidationRule } from "../../constants/auth";
 import { useAuthContext } from "../../context/auth-context";
 import useFetch from "../../hooks/useFetch";
@@ -12,6 +12,7 @@ import {
 import { validateForm } from "../../utils";
 import AuthForm from "./AuthForm";
 import SwitchForm from "./SwitchForm";
+import Timer from "./Timer";
 
 type Props = {
   setCurrentAuthForm: Dispatch<SetStateAction<CurrentAuthForm>>;
@@ -50,10 +51,18 @@ const Signup = ({ setCurrentAuthForm }: Props) => {
         validationRule: signupValidationRule,
         formData,
       });
+    let passwordConfirmError = false;
+    if (isPasswordConfirmTouched && !isPasswordConfirmCorrect) {
+      passwordConfirmError = true;
+      setErrorMessage((prevState) => ({
+        ...prevState,
+        passwordConfirm: "Password Confirm does not match with password",
+      }));
+    }
     if (!isFormValid) {
       setErrorMessage(errorMessage);
-      return;
     }
+    if (passwordConfirmError || !isFormValid) return;
     setErrorMessage({});
     const data = await apiCall<SignUpResponse, SignUpRequest>({
       url: ENDPOINT.BASE + ENDPOINT.AUTH.SING_UP,
@@ -135,6 +144,14 @@ const Signup = ({ setCurrentAuthForm }: Props) => {
         <span className="text-red-600 text-sm mt-1 flex justify-center font-bold">
           {error}
         </span>
+        {status === "success" && (
+          <>
+            <span className="text-green-400 text-sm mt-1 flex justify-center font-semibold">
+              {VERIFY_SIGNUP_MESSAGE}
+            </span>
+            <Timer />
+          </>
+        )}
       </AuthForm.Form>
     </AuthForm>
   );

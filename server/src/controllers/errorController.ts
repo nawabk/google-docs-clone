@@ -10,7 +10,7 @@ type ErrorResponse = {
 };
 
 const hanldeDuplicateFieldsDB = (err: MongoError): AppError => {
-  const valueArr = err.message.match(/email: '([^']+)'/);
+  const valueArr = err.message.match(/email: "([^"]+)"/);
   let message = "Something went wrong",
     statusCode = 500;
   if (valueArr?.length) {
@@ -29,7 +29,7 @@ const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
   let statusCode = 500,
     status = "error",
     message = "Something went wrong";
-
+  console.log(err);
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;

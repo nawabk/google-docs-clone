@@ -45,3 +45,11 @@ function validateEmail(email: string) {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailPattern.test(email);
 }
+
+export function formatTimer(time: string | number) {
+  if (typeof time === "number") {
+    time = time.toString();
+  }
+
+  return time.padStart(2, "0");
+}

@@ -45,9 +45,10 @@ const sendEmail_1 = __importStar(require("../utils/sendEmail"));
 exports.signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const newUser = (yield userModel_1.default.create(req.body));
     const newToken = (yield tokenModel_1.default.create({ userId: newUser._id }));
+    const message = `${process.env.CLIENT_URL}/verify_email?userId=${newUser._id}&token=${newToken.token}`;
     (0, sendEmail_1.default)({
         to: newUser.email,
-        message: newToken.token,
+        message,
         emailType: sendEmail_1.EmailType.EMAIL_VERIFICATION,
     });
     res.status(201).json({

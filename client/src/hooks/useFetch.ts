@@ -6,7 +6,7 @@ import {
 } from "../types/common";
 
 type PostAndPutProps<RequestBody> = {
-  method: "POST" | "PUT";
+  method: "POST" | "PATCH";
   body: RequestBody;
 };
 type Props<RequestBody> =
@@ -24,9 +24,7 @@ type Status = "idle" | "loading" | "success" | "error";
 function isErrorMessage<T>(
   response: APIResponse<T>
 ): response is ErrorResponse {
-  return (
-    "message" in response && !response.statusCode.toString().startsWith("2")
-  );
+  return "message" in response && response.status === "error";
 }
 
 function isSuccessfullResponse<T>(
@@ -51,7 +49,7 @@ const useFetch = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        ...((props.method === "POST" || props.method === "PUT") && {
+        ...((props.method === "POST" || props.method === "PATCH") && {
           body: JSON.stringify(props.body),
         }),
       });
@@ -61,7 +59,6 @@ const useFetch = () => {
         if (isSuccessfullResponse(responseData)) {
           return responseData.data;
         }
-        return;
       } else {
         setStatus("error");
         if (isErrorMessage(responseData)) {
