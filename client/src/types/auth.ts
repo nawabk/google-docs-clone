@@ -15,6 +15,7 @@ export type FormValidationResult<T> = {
 };
 
 export type SignUpResponse = {
+  _id: string;
   username: string;
   email: string;
   isEmailVerified: boolean;

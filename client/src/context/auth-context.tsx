@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
 
 type State = {
+  _id: string;
   isAuthenticated: boolean;
   username: string;
   email: string;
@@ -10,6 +11,7 @@ type State = {
 type Action = {
   type: "SET_USER";
   payload: {
+    _id: string;
     username: string;
     email: string;
     isEmailVerified: boolean;
@@ -36,6 +38,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const initialState: State = {
+  _id: "",
   isAuthenticated: false,
   username: "",
   email: "",

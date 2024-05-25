@@ -25,7 +25,7 @@ const Signup = ({ setCurrentAuthForm }: Props) => {
   const [isPasswordConfirmTouched, setIsPasswordConfirmTouched] =
     useState(false);
   const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
-  const { dispatch } = useAuthContext();
+  const { state, dispatch } = useAuthContext();
   const { status, apiCall, error } = useFetch();
 
   const passwordConfirmHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +149,7 @@ const Signup = ({ setCurrentAuthForm }: Props) => {
             <span className="text-green-400 text-sm mt-1 flex justify-center font-semibold">
               {VERIFY_SIGNUP_MESSAGE}
             </span>
-            <Timer />
+            <Timer userId={state._id} />
           </>
         )}
       </AuthForm.Form>
