@@ -67,7 +67,10 @@ schema.pre("save", function (next) {
 });
 schema.methods.verifyPassword = function (userPassword, candidatePassword) {
     return __awaiter(this, void 0, void 0, function* () {
-        return bcrypt_1.default.compare(candidatePassword, userPassword);
+        console.log({ candidatePassword, userPassword });
+        const result = yield bcrypt_1.default.compare(candidatePassword, userPassword);
+        console.log(result);
+        return result;
     });
 };
 const User = mongoose_1.default.model("User", schema);

@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signIn = exports.resendVerificationToken = exports.verifyUser = exports.signup = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const constants_1 = require("../constants");
 const tokenModel_1 = __importDefault(require("../models/tokenModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
@@ -84,9 +85,10 @@ const resendVerificationToken = (req, res, next) => __awaiter(void 0, void 0, vo
         if (!user)
             return next(new appError_1.default("User doest not exist", 404));
         const newToken = (yield tokenModel_1.default.create({ userId: user._id }));
+        const message = `${process.env.CLIENT_URL}/verify_email?userId=${user._id}&token=${newToken.token}`;
         yield (0, sendEmail_1.default)({
             to: user.email,
-            message: newToken.token,
+            message,
             emailType: sendEmail_1.EmailType.EMAIL_VERIFICATION,
         });
         res.status(201).json({
@@ -99,6 +101,11 @@ const resendVerificationToken = (req, res, next) => __awaiter(void 0, void 0, vo
     }
 });
 exports.resendVerificationToken = resendVerificationToken;
+const signToken = (_id) => {
+    return jsonwebtoken_1.default.sign({ _id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+};
 const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
@@ -107,9 +114,16 @@ const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             throw new appError_1.default("User does not exist.", 400);
         if (!user.isEmailVerified)
             throw new appError_1.default("Please verify the user.", 400);
-        res.send(200).json({
+        if (!(yield user.verifyPassword(user.password, password))) {
+            throw new appError_1.default("Password is Incorrect!", 400);
+        }
+        const token = signToken(user._id);
+        res.status(200).json({
             status: "success",
-            message: "Well Done!",
+            data: {
+                user,
+                token,
+            },
         });
     }
     catch (e) {

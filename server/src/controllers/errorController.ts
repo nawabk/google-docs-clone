@@ -3,6 +3,7 @@ import AppError from "../utils/appError";
 // import { MongooseError } from "mongoose";
 import { MongoError } from "mongodb";
 import { MongooseError } from "mongoose";
+import { ZodError } from "zod";
 
 type ErrorResponse = {
   status: string;
@@ -41,6 +42,8 @@ const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
     }
   } else if (err instanceof MongooseError) {
     message = err.message;
+  } else if (err instanceof ZodError) {
+    message = err.errors[0].message;
   } else if (err instanceof Error) {
     message = err.message;
   }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { AnyZodObject, ZodError } from "zod";
+import { AnyZodObject } from "zod";
 
 export const validateResource =
   (schema: AnyZodObject) =>
@@ -12,14 +12,6 @@ export const validateResource =
       });
       next();
     } catch (e: any) {
-      let errMessage: string;
-      if (e instanceof ZodError) {
-        errMessage = e.errors[0].message;
-      } else if (e instanceof Error) {
-        errMessage = e.message;
-      } else {
-        errMessage = "Something went wrong";
-      }
-      res.status(400).json({ message: errMessage });
+      next(e);
     }
   };

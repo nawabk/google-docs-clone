@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { ERROR_MESSAGE } from "../constants";
 import Token, { IToken } from "../models/tokenModel";
 import User, { IUser } from "../models/userModel";
@@ -67,9 +68,10 @@ export const resendVerificationToken = async (
     const user = (await User.findOne({ _id: req.params.userId })) as IUser;
     if (!user) return next(new AppError("User doest not exist", 404));
     const newToken = (await Token.create({ userId: user._id })) as IToken;
+    const message = `${process.env.CLIENT_URL}/verify_email?userId=${user._id}&token=${newToken.token}`;
     await sendEmail({
       to: user.email,
-      message: newToken.token,
+      message,
       emailType: EmailType.EMAIL_VERIFICATION,
     });
     res.status(201).json({
@@ -79,6 +81,12 @@ export const resendVerificationToken = async (
   } catch (e) {
     next(e);
   }
+};
+
+const signToken = (_id: string) => {
+  return jwt.sign({ _id }, process.env.JWT_SECRET!, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
 };
 
 export const signIn = async (
@@ -92,9 +100,16 @@ export const signIn = async (
     if (!user) throw new AppError("User does not exist.", 400);
     if (!user.isEmailVerified)
       throw new AppError("Please verify the user.", 400);
-    res.send(200).json({
+    if (!(await user.verifyPassword(user.password, password))) {
+      throw new AppError("Password is Incorrect!", 400);
+    }
+    const token = signToken(user._id);
+    res.status(200).json({
       status: "success",
-      message: "Well Done!",
+      data: {
+        user,
+        token,
+      },
     });
   } catch (e) {
     next(e);

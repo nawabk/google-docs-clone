@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password: string;
   passwordConfirm?: string;
   isEmailVerified?: boolean;
+  verifyPassword: (userPassword: string, candidatePassword: string) => boolean;
 }
 
 const schema: Schema = new mongoose.Schema<IUser>({
@@ -62,7 +63,10 @@ schema.methods.verifyPassword = async function (
   userPassword: string,
   candidatePassword: string
 ) {
-  return bcyrpt.compare(candidatePassword, userPassword);
+  console.log({ candidatePassword, userPassword });
+  const result = await bcyrpt.compare(candidatePassword, userPassword);
+  console.log(result);
+  return result;
 };
 
 const User = mongoose.model("User", schema);

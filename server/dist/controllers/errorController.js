@@ -7,6 +7,7 @@ const appError_1 = __importDefault(require("../utils/appError"));
 // import { MongooseError } from "mongoose";
 const mongodb_1 = require("mongodb");
 const mongoose_1 = require("mongoose");
+const zod_1 = require("zod");
 const hanldeDuplicateFieldsDB = (err) => {
     const valueArr = err.message.match(/email: "([^"]+)"/);
     let message = "Something went wrong", statusCode = 500;
@@ -37,6 +38,9 @@ const errorController = (err, _1, res, _2) => {
     }
     else if (err instanceof mongoose_1.MongooseError) {
         message = err.message;
+    }
+    else if (err instanceof zod_1.ZodError) {
+        message = err.errors[0].message;
     }
     else if (err instanceof Error) {
         message = err.message;
