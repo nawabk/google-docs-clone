@@ -16,8 +16,8 @@ var EmailType;
 (function (EmailType) {
     EmailType[EmailType["EMAIL_VERIFICATION"] = 0] = "EMAIL_VERIFICATION";
 })(EmailType || (exports.EmailType = EmailType = {}));
-function default_1({ to, message, emailType }) {
-    return __awaiter(this, void 0, void 0, function* () {
+function default_1(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ to, message, emailType }) {
         try {
             let subject = "";
             let body = "";

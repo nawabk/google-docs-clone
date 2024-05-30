@@ -2,14 +2,22 @@ import bcyrpt from "bcrypt";
 import mongoose, { Document, Schema } from "mongoose";
 import { validateEmail } from "../utils";
 
-export interface IUser extends Document {
+type User = {
   username: string;
   email: string;
   password: string;
   passwordConfirm?: string;
   isEmailVerified?: boolean;
-  verifyPassword: (userPassword: string, candidatePassword: string) => boolean;
-}
+};
+
+type Methods = {
+  verifyPassword: (
+    userPassword: string,
+    candidatePassword: string
+  ) => Promise<boolean>;
+};
+
+export type IUser = User & Methods & Document;
 
 const schema: Schema = new mongoose.Schema<IUser>({
   username: {
@@ -63,9 +71,7 @@ schema.methods.verifyPassword = async function (
   userPassword: string,
   candidatePassword: string
 ) {
-  console.log({ candidatePassword, userPassword });
   const result = await bcyrpt.compare(candidatePassword, userPassword);
-  console.log(result);
   return result;
 };
 

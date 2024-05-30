@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import globalErrorHandler from "./controllers/errorController";
@@ -10,6 +11,7 @@ app.use(
     origin: process.env.CLIENT_URL,
   })
 );
+app.use(cookieParser());
 app.use(express.json({ limit: "10kb" }));
 
 app.use("/api/users", userRoutes);

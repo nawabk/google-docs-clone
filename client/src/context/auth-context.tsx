@@ -8,15 +8,17 @@ type State = {
   isEmailVerified: boolean;
 };
 
-type Action = {
-  type: "SET_USER";
-  payload: {
-    _id: string;
-    username: string;
-    email: string;
-    isEmailVerified: boolean;
-  };
-};
+type Action =
+  | {
+      type: "SET_USER";
+      payload: {
+        _id: string;
+        username: string;
+        email: string;
+        isEmailVerified: boolean;
+      };
+    }
+  | { type: "SET_IS_AUTHENTICATED"; payload: boolean };
 
 type Dispatch = (action: Action) => void;
 const AuthContext = createContext<
@@ -30,6 +32,12 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         ...payload,
+      };
+    }
+    case "SET_IS_AUTHENTICATED": {
+      return {
+        ...state,
+        isAuthenticated: payload,
       };
     }
     default:

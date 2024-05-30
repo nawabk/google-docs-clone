@@ -118,11 +118,19 @@ const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             throw new appError_1.default("Password is Incorrect!", 400);
         }
         const token = signToken(user._id);
-        res.status(200).json({
+        res
+            .cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+        })
+            .status(200)
+            .json({
             status: "success",
             data: {
-                user,
-                token,
+                username: user.username,
+                _id: user._id,
+                email: user.email,
+                isEmailVerified: user.isEmailVerified,
             },
         });
     }

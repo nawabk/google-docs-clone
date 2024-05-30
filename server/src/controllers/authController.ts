@@ -8,7 +8,8 @@ import {
   ResendTokenInput,
   SignInInput,
   VerifyUserInput,
-} from "../schema/userSchema";
+} from "../schema/request/userSchema";
+import { UserResponse } from "../schema/response/userSchema";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import sendEmail, { EmailType } from "../utils/sendEmail";
@@ -91,7 +92,7 @@ const signToken = (_id: string) => {
 
 export const signIn = async (
   req: Request<{}, {}, SignInInput["body"]>,
-  res: Response,
+  res: Response<UserResponse>,
   next: NextFunction
 ) => {
   try {
@@ -104,13 +105,21 @@ export const signIn = async (
       throw new AppError("Password is Incorrect!", 400);
     }
     const token = signToken(user._id);
-    res.status(200).json({
-      status: "success",
-      data: {
-        user,
-        token,
-      },
-    });
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      })
+      .status(200)
+      .json({
+        status: "success",
+        data: {
+          username: user.username,
+          _id: user._id,
+          email: user.email,
+          isEmailVerified: user.isEmailVerified,
+        },
+      });
   } catch (e) {
     next(e);
   }

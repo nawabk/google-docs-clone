@@ -4,6 +4,7 @@ export const ENDPOINT = {
     SING_UP: "/api/users/signup",
     VERIFY: "/api/users/{userId}/verify",
     RESEND_TOKEN: "/api/users/{userId}/resend-token",
+    SIGN_IN: "/api/user/signin",
   },
 };
 

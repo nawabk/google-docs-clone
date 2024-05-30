@@ -1,4 +1,4 @@
-import { signupValidationRule } from "../constants/auth";
+import { signinValidationRule, signupValidationRule } from "../constants/auth";
 
 export type ValidationRule<T = {}> = Record<
   keyof T,
@@ -30,4 +30,18 @@ export type SignUpRequest = {
 
 export type SignUpFormValue = Record<keyof typeof signupValidationRule, string>;
 
+export type SignInFormValue = Record<keyof typeof signinValidationRule, string>;
+
 export type CurrentAuthForm = "signup" | "signin";
+
+export type SignInRequest = {
+  email: string;
+  password: string;
+};
+
+export type SignInResponse = {
+  _id: string;
+  username: string;
+  email: string;
+  isEmailVerified: boolean;
+};

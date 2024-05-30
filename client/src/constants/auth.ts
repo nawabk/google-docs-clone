@@ -23,3 +23,17 @@ export const signupValidationRule: ValidationRule<{
     required: true,
   },
 };
+
+export const signinValidationRule: ValidationRule<{
+  email: string;
+  password: string;
+}> = {
+  email: {
+    type: "email",
+    required: true,
+  },
+  password: {
+    type: "password",
+    required: true,
+  },
+};

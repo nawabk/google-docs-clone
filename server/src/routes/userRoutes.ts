@@ -1,17 +1,18 @@
-import express from "express";
+import express, { Response } from "express";
 import {
   resendVerificationToken,
   signIn,
   signup,
   verifyUser,
 } from "../controllers/authController";
+import { RequestWithUser, protect } from "../middleware/protect";
 import { validateResource } from "../middleware/validateResource";
 import {
   createUserSchema,
   resendTokenInput,
   signInInput,
   verifyUserInput,
-} from "../schema/userSchema";
+} from "../schema/request/userSchema";
 
 const router = express.Router();
 
@@ -23,5 +24,8 @@ router.post(
   validateResource(resendTokenInput),
   resendVerificationToken
 );
+router.get("/private", protect, (req: RequestWithUser, res: Response) => {
+  res.send("Private accessed");
+});
 
 export default router;
