@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ENDPOINT } from "../../constants";
 import { signinValidationRule } from "../../constants/auth";
 import { useAuthContext } from "../../context/auth-context";
@@ -19,6 +20,7 @@ type Props = {
 const SignIn = ({ setCurrentAuthForm }: Props) => {
   const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
   const { status, error, apiCall } = useFetch();
+  const navigate = useNavigate();
   const { dispatch } = useAuthContext();
   const formSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,6 +52,11 @@ const SignIn = ({ setCurrentAuthForm }: Props) => {
         type: "SET_IS_AUTHENTICATED",
         payload: true,
       });
+      dispatch({
+        type: "SET_IS_USER_VALIDATED",
+        payload: true,
+      });
+      navigate("/");
     }
   };
   return (

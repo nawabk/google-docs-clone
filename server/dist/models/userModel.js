@@ -53,7 +53,7 @@ const schema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
-});
+}, { timestamps: true });
 schema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!this.isModified("password"))

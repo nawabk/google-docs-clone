@@ -8,8 +8,8 @@ export function validateForm<FormValue>({
   formData: FormData;
 }): FormValidationResult<FormValue> {
   let isFormValid = true;
-  let errorMessage: Record<string, string> = {};
-  let formValue: FormValue = {} as FormValue;
+  const errorMessage: Record<string, string> = {};
+  const formValue: FormValue = {} as FormValue;
   for (const entries of Object.entries(validationRule)) {
     const input = entries[0];
     const rule = entries[1] as ValidationRule[keyof typeof validationRule];

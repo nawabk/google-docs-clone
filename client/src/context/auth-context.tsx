@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer } from "react";
 
 type State = {
   _id: string;
+  isUserValidated: boolean;
   isAuthenticated: boolean;
   username: string;
   email: string;
@@ -18,7 +19,8 @@ type Action =
         isEmailVerified: boolean;
       };
     }
-  | { type: "SET_IS_AUTHENTICATED"; payload: boolean };
+  | { type: "SET_IS_AUTHENTICATED"; payload: boolean }
+  | { type: "SET_IS_USER_VALIDATED"; payload: boolean };
 
 type Dispatch = (action: Action) => void;
 const AuthContext = createContext<
@@ -40,6 +42,12 @@ const reducer = (state: State, action: Action): State => {
         isAuthenticated: payload,
       };
     }
+    case "SET_IS_USER_VALIDATED": {
+      return {
+        ...state,
+        isUserValidated: payload,
+      };
+    }
     default:
       return state;
   }
@@ -51,6 +59,7 @@ const initialState: State = {
   username: "",
   email: "",
   isEmailVerified: false,
+  isUserValidated: false,
 };
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initialState);

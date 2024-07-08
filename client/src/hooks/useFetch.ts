@@ -49,6 +49,7 @@ const useFetch = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         ...((props.method === "POST" || props.method === "PATCH") && {
           body: JSON.stringify(props.body),
         }),

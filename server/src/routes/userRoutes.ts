@@ -1,4 +1,4 @@
-import express, { Response } from "express";
+import express, { NextFunction, Response } from "express";
 import {
   resendVerificationToken,
   signIn,
@@ -13,6 +13,8 @@ import {
   signInInput,
   verifyUserInput,
 } from "../schema/request/userSchema";
+import { UserResponse } from "../schema/response/userSchema";
+import AppError from "../utils/appError";
 
 const router = express.Router();
 
@@ -24,8 +26,23 @@ router.post(
   validateResource(resendTokenInput),
   resendVerificationToken
 );
-router.get("/private", protect, (req: RequestWithUser, res: Response) => {
-  res.send("Private accessed");
-});
+router.get(
+  "/validate",
+  protect,
+  (req: RequestWithUser, res: Response<UserResponse>, next: NextFunction) => {
+    const currentUser = req.user;
+    if (!currentUser) return next(new AppError("No User found", 400));
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        _id: currentUser.id,
+        username: currentUser.username,
+        email: currentUser.email,
+        isEmailVerified: currentUser.isEmailVerified,
+      },
+    });
+  }
+);
 
 export default router;
