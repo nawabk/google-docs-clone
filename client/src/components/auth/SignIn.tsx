@@ -1,11 +1,10 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ENDPOINT } from "../../constants";
 import { signinValidationRule } from "../../constants/auth";
 import { useAuthContext } from "../../context/auth-context";
 import useFetch from "../../hooks/useFetch";
 import {
-  CurrentAuthForm,
   SignInFormValue,
   SignInRequest,
   SignInResponse,
@@ -14,10 +13,7 @@ import { validateForm } from "../../utils";
 import AuthForm from "./AuthForm";
 import SwitchForm from "./SwitchForm";
 
-type Props = {
-  setCurrentAuthForm: Dispatch<SetStateAction<CurrentAuthForm>>;
-};
-const SignIn = ({ setCurrentAuthForm }: Props) => {
+const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState<Record<string, string>>({});
   const { status, error, apiCall } = useFetch();
   const navigate = useNavigate();
@@ -84,10 +80,7 @@ const SignIn = ({ setCurrentAuthForm }: Props) => {
         <AuthForm.Button loading={status === "loading"}>
           Sign in
         </AuthForm.Button>
-        <SwitchForm
-          currentAuthForm="signin"
-          setCurrentAuthForm={setCurrentAuthForm}
-        />
+        <SwitchForm />
         <span className="text-red-600 text-sm mt-1 flex justify-center font-bold">
           {error}
         </span>

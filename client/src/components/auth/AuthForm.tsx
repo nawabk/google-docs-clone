@@ -41,7 +41,6 @@ const Label = ({ children, ...rest }: ComponentProps<"label">) => {
 };
 
 const Input = ({
-  children,
   className = "",
   errorMessage = "",
   ...rest

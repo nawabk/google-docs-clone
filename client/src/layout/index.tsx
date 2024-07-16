@@ -7,7 +7,9 @@ const Layout = ({ children }: Props) => {
   return (
     <div className="layout">
       <Header />
-      <main className="container mx-auto grid grid-cols-8">{children}</main>
+      <main className="container mx-auto grid grid-cols-8 relative" id="main">
+        {children}
+      </main>
     </div>
   );
 };

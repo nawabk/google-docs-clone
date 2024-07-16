@@ -10,7 +10,10 @@ export const createDocument = async (
 ) => {
   try {
     const { name = "", userId } = req.body;
-    const document = await DocumentModel.create<IDocument>({ name, userId });
+    const document = await DocumentModel.create<IDocument>({
+      name,
+      createdBy: userId,
+    });
     const user = await User.findById(userId);
     if (!user) throw new AppError("No user exist with the provided ID!", 404);
     res.status(201).json({

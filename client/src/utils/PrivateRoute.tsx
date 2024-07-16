@@ -41,7 +41,7 @@ const PrivateRoute = ({ children }: Props) => {
   }, [isAuthenticated, isUserValidated, dispatch, apiCall]);
 
   if (isUserValidated) {
-    return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+    return isAuthenticated ? <>{children}</> : <Navigate to="/signin" />;
   } else {
     if (status === "idle") return <></>;
     return status === "loading" ? (
@@ -49,7 +49,7 @@ const PrivateRoute = ({ children }: Props) => {
     ) : status === "success" ? (
       <>{children}</>
     ) : (
-      <Navigate to="/auth" />
+      <Navigate to="/signin" />
     );
   }
 };

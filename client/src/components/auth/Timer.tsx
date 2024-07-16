@@ -9,7 +9,7 @@ const Timer = ({ userId }: { userId: string }) => {
 
   useEffect(() => {
     function verificationHandler() {}
-    let endTime = Date.now() + 60 * 1000;
+    const endTime = Date.now() + 60 * 1000;
     const interval = setInterval(() => {
       const currentTime = Date.now();
       const diff = endTime - currentTime;

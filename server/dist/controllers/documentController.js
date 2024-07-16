@@ -19,7 +19,10 @@ const appError_1 = __importDefault(require("../utils/appError"));
 const createDocument = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name = "", userId } = req.body;
-        const document = yield documentModel_1.default.create({ name, userId });
+        const document = yield documentModel_1.default.create({
+            name,
+            createdBy: userId,
+        });
         const user = yield userModel_1.default.findById(userId);
         if (!user)
             throw new appError_1.default("No user exist with the provided ID!", 404);

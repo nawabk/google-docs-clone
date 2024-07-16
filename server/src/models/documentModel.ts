@@ -4,6 +4,7 @@ export interface IDocument extends Document {
   name: string;
   createdBy: ObjectId;
   sharedWith: Array<ObjectId>;
+  content: string;
 }
 
 const documentSchema: Schema = new mongoose.Schema<IDocument>(
@@ -14,6 +15,7 @@ const documentSchema: Schema = new mongoose.Schema<IDocument>(
       ref: "User",
     },
     sharedWith: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    content: String,
   },
   { timestamps: true }
 );

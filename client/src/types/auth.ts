@@ -1,6 +1,6 @@
 import { signinValidationRule, signupValidationRule } from "../constants/auth";
 
-export type ValidationRule<T = {}> = Record<
+export type ValidationRule<T = void> = Record<
   keyof T,
   {
     type: "email" | "password" | "text" | "number";

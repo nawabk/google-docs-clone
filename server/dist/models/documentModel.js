@@ -31,6 +31,7 @@ const documentSchema = new mongoose_1.default.Schema({
         ref: "User",
     },
     sharedWith: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
+    content: String,
 }, { timestamps: true });
 const DocumentModel = mongoose_1.default.model("Document", documentSchema);
 exports.default = DocumentModel;

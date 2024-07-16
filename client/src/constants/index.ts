@@ -7,6 +7,9 @@ export const ENDPOINT = {
     SIGN_IN: "/api/users/signin",
     VALIDATE: "/api/users/validate",
   },
+  DOCUMENT: {
+    CREATE: "/api/documents/",
+  },
 };
 
 export const VERIFY_SIGNUP_MESSAGE =

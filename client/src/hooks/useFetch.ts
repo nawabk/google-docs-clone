@@ -37,7 +37,7 @@ const useFetch = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
 
-  async function apiCall<ResponseBody, RequestBody = {}>(
+  async function apiCall<ResponseBody, RequestBody = void>(
     props: Props<RequestBody>
   ): Promise<SuccessfullResponse<ResponseBody>["data"] | undefined> {
     const { method, url } = props;

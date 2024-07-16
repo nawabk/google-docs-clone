@@ -3,11 +3,13 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+import SignIn from "./components/auth/SignIn";
+import Signup from "./components/auth/Signup";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import AuthContextProvider from "./context/auth-context";
 import Layout from "./layout";
-import AuthPage from "./pages/Auth";
-import Document from "./pages/Document";
+import DocumentList from "./pages/DocumentList";
+import DocumentPage from "./pages/DocumentPage";
 import PrivateRoute from "./utils/PrivateRoute";
 
 const router = createBrowserRouter([
@@ -19,13 +21,25 @@ const router = createBrowserRouter([
     path: "document",
     element: (
       <PrivateRoute>
-        <Document />
+        <DocumentList />
       </PrivateRoute>
     ),
   },
   {
-    path: "auth",
-    element: <AuthPage />,
+    path: "document/:documentId",
+    element: (
+      <PrivateRoute>
+        <DocumentPage />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "signup",
+    element: <Signup />,
+  },
+  {
+    path: "signin",
+    element: <SignIn />,
   },
   {
     path: "verify_email",

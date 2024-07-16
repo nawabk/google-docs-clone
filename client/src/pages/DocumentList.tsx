@@ -1,6 +1,6 @@
 import CreateNewDocument from "../components/document/CreateNewDocument";
 
-const Document = () => {
+const DocumentList = () => {
   return (
     <div className="col-span-full pt-8 flex justify-center">
       <CreateNewDocument />
@@ -8,4 +8,4 @@ const Document = () => {
   );
 };
 
-export default Document;
+export default DocumentList;

@@ -2,7 +2,7 @@ import type { ErrorRequestHandler } from "express";
 import AppError from "../utils/appError";
 // import { MongooseError } from "mongoose";
 import { MongoError } from "mongodb";
-import { MongooseError } from "mongoose";
+import { CastError, MongooseError } from "mongoose";
 import { ZodError } from "zod";
 
 type ErrorResponse = {
@@ -22,11 +22,16 @@ const hanldeDuplicateFieldsDB = (err: MongoError): AppError => {
   return new AppError(message, 400);
 };
 
+const handleCastError = (err: CastError) => {
+  const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
+function isMongooseCastError(err: MongooseError): err is CastError {
+  return err.name === "CastError";
+}
+
 const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
-  const errorResponse: ErrorResponse = {
-    status: err.status || "error",
-    message: err.message || "Something went wrong",
-  };
   let statusCode = 500,
     status = "error",
     message = "Something went wrong";
@@ -41,13 +46,16 @@ const errorController: ErrorRequestHandler = (err, _1, res, _2) => {
       message = modifiedErr.message;
     }
   } else if (err instanceof MongooseError) {
-    message = err.message;
+    if (isMongooseCastError(err)) {
+      ({ statusCode, message } = handleCastError(err));
+    } else {
+      message = err.message;
+    }
   } else if (err instanceof ZodError) {
     message = err.errors[0].message;
   } else if (err instanceof Error) {
     message = err.message;
   }
-  console.log({ message });
   res.status(statusCode).json({ status, message });
 };
 

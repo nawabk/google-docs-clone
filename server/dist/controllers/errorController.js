@@ -18,11 +18,14 @@ const hanldeDuplicateFieldsDB = (err) => {
     }
     return new appError_1.default(message, 400);
 };
+const handleCastError = (err) => {
+    const message = `Invalid ${err.path}: ${err.value}.`;
+    return new appError_1.default(message, 400);
+};
+function isMongooseCastError(err) {
+    return err.name === "CastError";
+}
 const errorController = (err, _1, res, _2) => {
-    const errorResponse = {
-        status: err.status || "error",
-        message: err.message || "Something went wrong",
-    };
     let statusCode = 500, status = "error", message = "Something went wrong";
     console.log(err);
     if (err instanceof appError_1.default) {
@@ -37,7 +40,12 @@ const errorController = (err, _1, res, _2) => {
         }
     }
     else if (err instanceof mongoose_1.MongooseError) {
-        message = err.message;
+        if (isMongooseCastError(err)) {
+            ({ statusCode, message } = handleCastError(err));
+        }
+        else {
+            message = err.message;
+        }
     }
     else if (err instanceof zod_1.ZodError) {
         message = err.errors[0].message;
@@ -45,7 +53,6 @@ const errorController = (err, _1, res, _2) => {
     else if (err instanceof Error) {
         message = err.message;
     }
-    console.log({ message });
     res.status(statusCode).json({ status, message });
 };
 exports.default = errorController;

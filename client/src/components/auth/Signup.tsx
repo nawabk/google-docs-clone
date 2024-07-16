@@ -1,10 +1,9 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { ENDPOINT, VERIFY_SIGNUP_MESSAGE } from "../../constants";
 import { signupValidationRule } from "../../constants/auth";
 import { useAuthContext } from "../../context/auth-context";
 import useFetch from "../../hooks/useFetch";
 import {
-  CurrentAuthForm,
   SignUpFormValue,
   SignUpRequest,
   SignUpResponse,
@@ -14,10 +13,7 @@ import AuthForm from "./AuthForm";
 import SwitchForm from "./SwitchForm";
 import Timer from "./Timer";
 
-type Props = {
-  setCurrentAuthForm: Dispatch<SetStateAction<CurrentAuthForm>>;
-};
-const Signup = ({ setCurrentAuthForm }: Props) => {
+const Signup = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const [isPasswordConfirmCorrect, setIsPasswordConfirmCorrect] =
@@ -137,10 +133,7 @@ const Signup = ({ setCurrentAuthForm }: Props) => {
         <AuthForm.Button loading={status === "loading"}>
           Sign up
         </AuthForm.Button>
-        <SwitchForm
-          currentAuthForm="signup"
-          setCurrentAuthForm={setCurrentAuthForm}
-        />
+        <SwitchForm />
         <span className="text-red-600 text-sm mt-1 flex justify-center font-bold">
           {error}
         </span>
