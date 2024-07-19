@@ -9,6 +9,7 @@ export const ENDPOINT = {
   },
   DOCUMENT: {
     CREATE: "/api/documents/",
+    GET: "/api/documents/{documentId}",
   },
 };
 

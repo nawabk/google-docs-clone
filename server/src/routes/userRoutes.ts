@@ -1,11 +1,11 @@
-import express, { NextFunction, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import {
   resendVerificationToken,
   signIn,
   signup,
   verifyUser,
 } from "../controllers/authController";
-import { RequestWithUser, protect } from "../middleware/protect";
+import { protect } from "../middleware/protect";
 import { validateResource } from "../middleware/validateResource";
 import {
   createUserSchema,
@@ -29,7 +29,7 @@ router.post(
 router.get(
   "/validate",
   protect,
-  (req: RequestWithUser, res: Response<UserResponse>, next: NextFunction) => {
+  (req: Request, res: Response<UserResponse>, next: NextFunction) => {
     const currentUser = req.user;
     if (!currentUser) return next(new AppError("No User found", 400));
 

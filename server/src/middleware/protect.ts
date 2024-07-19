@@ -7,9 +7,6 @@ interface MyJwtPayload extends JwtPayload {
   _id: string;
   // add other fields as necessary
 }
-export interface RequestWithUser extends Request {
-  user?: IUser;
-}
 
 function verifyToken<T extends JwtPayload>(
   token: string,
@@ -24,7 +21,7 @@ function verifyToken<T extends JwtPayload>(
   });
 }
 export const protect = async (
-  req: RequestWithUser,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

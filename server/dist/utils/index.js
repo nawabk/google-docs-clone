@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isValidBody = exports.validateEmail = void 0;
+exports.validateEmail = void 0;
+exports.isValidBody = isValidBody;
 const validateEmail = (email) => {
     return !!String(email)
         .toLowerCase()
@@ -10,4 +11,3 @@ exports.validateEmail = validateEmail;
 function isValidBody(body, fields) {
     return fields.every((field) => field in body);
 }
-exports.isValidBody = isValidBody;

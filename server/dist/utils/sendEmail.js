@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailType = void 0;
+exports.default = default_1;
 const resend_1 = require("resend");
 const resend = new resend_1.Resend(process.env.RESEND_API);
 var EmailType;
@@ -38,7 +39,6 @@ function default_1(_a) {
         }
     });
 }
-exports.default = default_1;
 function getEmailVerificationSubject() {
     return "Email verification";
 }

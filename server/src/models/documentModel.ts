@@ -1,9 +1,12 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 
 export interface IDocument extends Document {
   name: string;
   createdBy: ObjectId;
-  sharedWith: Array<ObjectId>;
+  sharedWith: Array<{
+    user: ObjectId;
+    access: "Editor" | "Viewer";
+  }>;
   content: string;
 }
 
@@ -14,7 +17,16 @@ const documentSchema: Schema = new mongoose.Schema<IDocument>(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    sharedWith: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    sharedWith: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "User" },
+        access: {
+          type: String,
+          enum: ["Editor", "Viewer"],
+          default: "Viewer",
+        },
+      },
+    ],
     content: String,
   },
   { timestamps: true }

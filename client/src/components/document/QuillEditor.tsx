@@ -1,10 +1,13 @@
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
+import { useDocumentContext } from "../../context/document-context";
 
 const QuillEditor = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const quill = useRef<Quill | null>(null);
+  const { state } = useDocumentContext();
+  const { selectedDocument } = state;
 
   useEffect(() => {
     const editorContainer = containerRef.current;
@@ -15,6 +18,9 @@ const QuillEditor = () => {
     }
     console.log(quill.current);
   }, []);
+
+  if (!selectedDocument) return;
+
   return <div ref={containerRef}></div>;
 };
 

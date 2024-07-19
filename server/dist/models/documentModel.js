@@ -30,7 +30,16 @@ const documentSchema = new mongoose_1.default.Schema({
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",
     },
-    sharedWith: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "User" }],
+    sharedWith: [
+        {
+            user: { type: mongoose_1.Schema.Types.ObjectId, ref: "User" },
+            access: {
+                type: String,
+                enum: ["Editor", "Viewer"],
+                default: "Viewer",
+            },
+        },
+    ],
     content: String,
 }, { timestamps: true });
 const DocumentModel = mongoose_1.default.model("Document", documentSchema);

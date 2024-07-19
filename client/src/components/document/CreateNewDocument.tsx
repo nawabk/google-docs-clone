@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { ENDPOINT } from "../../constants";
 import { useAuthContext } from "../../context/auth-context";
+import { useDocumentContext } from "../../context/document-context";
 import useFetch from "../../hooks/useFetch";
 import { CreateDocumentRequest, Document } from "../../types/document";
 import Loader from "../common/Loader";
@@ -10,6 +11,7 @@ import Loader from "../common/Loader";
 const CreateNewDocument = () => {
   const { state } = useAuthContext();
   const { status, apiCall, error } = useFetch();
+  const { dispatch } = useDocumentContext();
   const { _id: userId } = state;
   const navigate = useNavigate();
   const createDocumentHandler = async () => {
@@ -21,6 +23,12 @@ const CreateNewDocument = () => {
       },
     });
     if (responseData) {
+      dispatch({
+        type: "SET_SELECTED_DOCUMENT",
+        payload: {
+          document: responseData,
+        },
+      });
       navigate(`/document/${responseData._id}`);
     }
   };

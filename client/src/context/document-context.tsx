@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useContext, useReducer } from "react";
 import { Document } from "../types/document";
 
 type State = {
@@ -61,4 +61,14 @@ export const DocumentContextProvider = ({
   return (
     <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
   );
+};
+
+export const useDocumentContext = () => {
+  const context = useContext(Context);
+  if (context === undefined) {
+    throw new Error(
+      "useDocumentContext should be used inside DocumentContextProvider"
+    );
+  }
+  return context;
 };

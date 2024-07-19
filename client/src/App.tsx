@@ -7,6 +7,7 @@ import SignIn from "./components/auth/SignIn";
 import Signup from "./components/auth/Signup";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import AuthContextProvider from "./context/auth-context";
+import { DocumentContextProvider } from "./context/document-context";
 import Layout from "./layout";
 import DocumentList from "./pages/DocumentList";
 import DocumentPage from "./pages/DocumentPage";
@@ -49,9 +50,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <AuthContextProvider>
-      <Layout>
-        <RouterProvider router={router} />
-      </Layout>
+      <DocumentContextProvider>
+        <Layout>
+          <RouterProvider router={router} />
+        </Layout>
+      </DocumentContextProvider>
     </AuthContextProvider>
   );
 }
