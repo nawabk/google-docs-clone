@@ -66,3 +66,15 @@ export const signInInput = z.object({
 });
 
 export type SignInInput = z.infer<typeof signInInput>;
+
+export const searchUsersSchema = z.object({
+  query: z.object({
+    text: z.string({
+      required_error: "Please provided the search text.",
+    }),
+    limit: z.string().optional(),
+    page: z.string().optional(),
+  }),
+});
+
+export type SearchUserSchema = z.infer<typeof searchUsersSchema>;

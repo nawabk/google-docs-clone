@@ -45,3 +45,5 @@ export type SignInResponse = {
   email: string;
   isEmailVerified: boolean;
 };
+
+export type UserResponse = SignInResponse;

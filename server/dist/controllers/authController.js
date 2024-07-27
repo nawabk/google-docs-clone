@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signIn = exports.resendVerificationToken = exports.verifyUser = exports.signup = void 0;
+exports.searchUsers = exports.logout = exports.signIn = exports.resendVerificationToken = exports.verifyUser = exports.signup = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const constants_1 = require("../constants");
 const tokenModel_1 = __importDefault(require("../models/tokenModel"));
@@ -139,3 +139,43 @@ const signIn = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.signIn = signIn;
+const logout = (req, res, next) => {
+    try {
+        res.clearCookie("token").status(200).json({
+            status: "success",
+            data: "Logout successfully!",
+        });
+    }
+    catch (e) {
+        next(e);
+    }
+};
+exports.logout = logout;
+const searchUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { text, limit = "10", page = "1" } = req.query;
+        const limitInNumber = +limit;
+        const pageInNumber = +page;
+        if (isNaN(limitInNumber) || isNaN(pageInNumber)) {
+            throw new appError_1.default("Please provide limit or page in number.", 400);
+        }
+        const skip = (pageInNumber - 1) * limitInNumber;
+        const allUsers = yield userModel_1.default.find({
+            $or: [
+                { email: { $regex: text, $options: "i" } },
+                { username: { $regex: text, $options: "i" } },
+            ],
+        })
+            .limit(limitInNumber)
+            .skip(skip);
+        const usersWithoutLoggedInUser = allUsers.filter((user) => { var _a, _b, _c; return ((_a = user === null || user === void 0 ? void 0 : user._id) === null || _a === void 0 ? void 0 : _a.toString()) !== ((_c = (_b = req.user) === null || _b === void 0 ? void 0 : _b._id) === null || _c === void 0 ? void 0 : _c.toString()); });
+        res.status(200).json({
+            status: "success",
+            data: usersWithoutLoggedInUser,
+        });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+exports.searchUsers = searchUsers;

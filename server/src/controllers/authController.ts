@@ -6,6 +6,7 @@ import User, { IUser } from "../models/userModel";
 import {
   CreateUserSchema,
   ResendTokenInput,
+  SearchUserSchema,
   SignInInput,
   VerifyUserInput,
 } from "../schema/request/userSchema";
@@ -120,6 +121,50 @@ export const signIn = async (
           isEmailVerified: user.isEmailVerified,
         },
       });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const logout = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.clearCookie("token").status(200).json({
+      status: "success",
+      data: "Logout successfully!",
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const searchUsers = async (
+  req: Request<{}, {}, {}, SearchUserSchema["query"]>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { text, limit = "10", page = "1" } = req.query;
+    const limitInNumber = +limit;
+    const pageInNumber = +page;
+    if (isNaN(limitInNumber) || isNaN(pageInNumber)) {
+      throw new AppError("Please provide limit or page in number.", 400);
+    }
+    const skip = (pageInNumber - 1) * limitInNumber;
+    const allUsers = await User.find<IUser>({
+      $or: [
+        { email: { $regex: text, $options: "i" } },
+        { username: { $regex: text, $options: "i" } },
+      ],
+    })
+      .limit(limitInNumber)
+      .skip(skip);
+    const usersWithoutLoggedInUser = allUsers.filter(
+      (user) => user?._id?.toString() !== req.user?._id?.toString()
+    );
+    res.status(200).json({
+      status: "success",
+      data: usersWithoutLoggedInUser,
+    });
   } catch (e) {
     next(e);
   }

@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
 import {
+  logout,
   resendVerificationToken,
+  searchUsers,
   signIn,
   signup,
   verifyUser,
@@ -10,6 +12,7 @@ import { validateResource } from "../middleware/validateResource";
 import {
   createUserSchema,
   resendTokenInput,
+  searchUsersSchema,
   signInInput,
   verifyUserInput,
 } from "../schema/request/userSchema";
@@ -43,6 +46,15 @@ router.get(
       },
     });
   }
+);
+
+router.get("/logout", logout);
+
+router.get(
+  "/search",
+  protect,
+  validateResource(searchUsersSchema),
+  searchUsers
 );
 
 export default router;

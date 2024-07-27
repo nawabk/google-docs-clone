@@ -19,7 +19,7 @@ const QuillEditor = () => {
     console.log(quill.current);
   }, []);
 
-  if (!selectedDocument) return;
+  if (!selectedDocument) return null;
 
   return <div ref={containerRef}></div>;
 };

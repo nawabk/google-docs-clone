@@ -53,3 +53,11 @@ export function formatTimer(time: string | number) {
 
   return time.padStart(2, "0");
 }
+
+export function formatDate(date: Date) {
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${day} ${month}, ${year}`;
+}

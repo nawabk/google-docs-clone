@@ -1,19 +1,42 @@
 import { ChangeEvent, useRef } from "react";
+import { ENDPOINT } from "../../constants";
 import { useDocumentContext } from "../../context/document-context";
+import useFetch from "../../hooks/useFetch";
 
 const DocumentTitle = () => {
-  const { state } = useDocumentContext();
+  const { state, dispatch } = useDocumentContext();
   const { selectedDocument } = state;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { status, apiCall } = useFetch();
 
   if (!selectedDocument) return null;
 
-  const { name } = selectedDocument;
+  const { name, _id } = selectedDocument;
 
   const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target.value;
+    const value = e.target.value;
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {}, 500);
+    timer.current = setTimeout(async () => {
+      const url =
+        ENDPOINT.BASE + ENDPOINT.DOCUMENT.UPDATE.replace("{documentId}", _id);
+      const responseData = await apiCall({
+        url,
+        method: "PATCH",
+        body: {
+          name: value,
+        },
+      });
+      if (responseData) {
+        dispatch({
+          type: "UPDATE_SELECTED_DOCUMENT",
+          payload: {
+            updatedDocument: {
+              name: value,
+            },
+          },
+        });
+      }
+    }, 500);
 
     return () => {
       if (timer.current) clearTimeout(timer.current);

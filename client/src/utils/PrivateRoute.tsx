@@ -47,7 +47,7 @@ const PrivateRoute = ({ children }: Props) => {
     return status === "loading" ? (
       <Loader />
     ) : status === "success" ? (
-      <>{children}</>
+      children
     ) : (
       <Navigate to="/signin" />
     );

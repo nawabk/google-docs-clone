@@ -30,6 +30,31 @@ export const createDocument = async (
   }
 };
 
+export const getDocumentList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = req.user;
+    if (!user) return new AppError("User Not Found", 404);
+    const documents = await DocumentModel.find<IDocument>({
+      $or: [
+        {
+          createdBy: user._id,
+        },
+        { "sharedWith.user": user._id },
+      ],
+    });
+    res.status(200).json({
+      status: "success",
+      data: documents,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const getDocument = async (
   req: Request<GetDocumentSchema["params"]>,
   res: Response,

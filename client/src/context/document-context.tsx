@@ -4,6 +4,7 @@ import { Document } from "../types/document";
 type State = {
   documentList: Document[];
   selectedDocument: Document | null;
+  isDocumentPageActive: boolean;
 };
 
 type Action =
@@ -17,6 +18,18 @@ type Action =
       type: "SET_SELECTED_DOCUMENT";
       payload: {
         document: Document;
+      };
+    }
+  | {
+      type: "UPDATE_SELECTED_DOCUMENT";
+      payload: {
+        updatedDocument: Partial<Document>;
+      };
+    }
+  | {
+      type: "SET_DOCUMENT_PAGE_ACTIVE";
+      payload: {
+        isActive: boolean;
       };
     };
 
@@ -44,6 +57,23 @@ const reducer = (state: State, action: Action): State => {
         selectedDocument: payload.document,
       };
     }
+    case "UPDATE_SELECTED_DOCUMENT": {
+      return {
+        ...state,
+        ...(state.selectedDocument && {
+          selectedDocument: {
+            ...state.selectedDocument,
+            ...payload.updatedDocument,
+          },
+        }),
+      };
+    }
+    case "SET_DOCUMENT_PAGE_ACTIVE": {
+      return {
+        ...state,
+        isDocumentPageActive: payload.isActive,
+      };
+    }
     default:
       return state;
   }
@@ -51,6 +81,7 @@ const reducer = (state: State, action: Action): State => {
 const initialState: State = {
   documentList: [],
   selectedDocument: null,
+  isDocumentPageActive: false,
 };
 export const DocumentContextProvider = ({
   children,

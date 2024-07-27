@@ -6,10 +6,14 @@ export const ENDPOINT = {
     RESEND_TOKEN: "/api/users/{userId}/resend-token",
     SIGN_IN: "/api/users/signin",
     VALIDATE: "/api/users/validate",
+    LOGOUT: "/api/users/logout",
+    SEARCH: "/api/users/search",
   },
   DOCUMENT: {
     CREATE: "/api/documents/",
     GET: "/api/documents/{documentId}",
+    UPDATE: "/api/documents/{documentId}",
+    GET_ALL: "/api/documents",
   },
 };
 

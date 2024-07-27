@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sharedDocument = exports.updateDocumentName = exports.getDocument = exports.createDocument = void 0;
+exports.sharedDocument = exports.updateDocumentName = exports.getDocument = exports.getDocumentList = exports.createDocument = void 0;
 const documentModel_1 = __importDefault(require("../models/documentModel"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const appError_1 = __importDefault(require("../utils/appError"));
@@ -36,6 +36,29 @@ const createDocument = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.createDocument = createDocument;
+const getDocumentList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = req.user;
+        if (!user)
+            return new appError_1.default("User Not Found", 404);
+        const documents = yield documentModel_1.default.find({
+            $or: [
+                {
+                    createdBy: user._id,
+                },
+                { "sharedWith.user": user._id },
+            ],
+        });
+        res.status(200).json({
+            status: "success",
+            data: documents,
+        });
+    }
+    catch (e) {
+        next(e);
+    }
+});
+exports.getDocumentList = getDocumentList;
 const getDocument = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { documentId } = req.params;

@@ -28,4 +28,6 @@ router.get("/validate", protect_1.protect, (req, res, next) => {
         },
     });
 });
+router.get("/logout", authController_1.logout);
+router.get("/search", protect_1.protect, (0, validateResource_1.validateResource)(userSchema_1.searchUsersSchema), authController_1.searchUsers);
 exports.default = router;

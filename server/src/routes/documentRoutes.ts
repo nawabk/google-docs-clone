@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createDocument,
   getDocument,
+  getDocumentList,
   sharedDocument,
   updateDocumentName,
 } from "../controllers/documentController";
@@ -17,12 +18,10 @@ import {
 
 const documentRoutes = Router();
 
-documentRoutes.post(
-  "/",
-  protect,
-  validateResource(createDocumentSchema),
-  createDocument
-);
+documentRoutes
+  .route("/")
+  .post(protect, validateResource(createDocumentSchema), createDocument)
+  .get(protect, getDocumentList);
 
 documentRoutes.get(
   "/:documentId",
