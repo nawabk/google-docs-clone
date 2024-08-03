@@ -32,14 +32,15 @@ const SignIn = () => {
       return;
     }
     setErrorMessage({});
-    const data = await apiCall<SignInResponse, SignInRequest>({
+    const response = await apiCall<SignInResponse, SignInRequest>({
       url: ENDPOINT.BASE + ENDPOINT.AUTH.SIGN_IN,
       method: "POST",
       body: {
         ...formValue,
       },
     });
-    if (data) {
+    if (response) {
+      const { data } = response;
       dispatch({
         type: "SET_USER",
         payload: data,

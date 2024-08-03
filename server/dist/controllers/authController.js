@@ -44,7 +44,12 @@ const appError_1 = __importDefault(require("../utils/appError"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const sendEmail_1 = __importStar(require("../utils/sendEmail"));
 exports.signup = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const newUser = (yield userModel_1.default.create(req.body));
+    const newUser = yield userModel_1.default.create({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        passwordConfirm: req.body.passwordConfirm,
+    });
     const newToken = (yield tokenModel_1.default.create({ userId: newUser._id }));
     const message = `${process.env.CLIENT_URL}/verify_email?userId=${newUser._id}&token=${newToken.token}`;
     (0, sendEmail_1.default)({
@@ -152,6 +157,7 @@ const logout = (req, res, next) => {
 };
 exports.logout = logout;
 const searchUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const { text, limit = "10", page = "1" } = req.query;
         const limitInNumber = +limit;
@@ -160,18 +166,65 @@ const searchUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             throw new appError_1.default("Please provide limit or page in number.", 400);
         }
         const skip = (pageInNumber - 1) * limitInNumber;
-        const allUsers = yield userModel_1.default.find({
-            $or: [
-                { email: { $regex: text, $options: "i" } },
-                { username: { $regex: text, $options: "i" } },
+        // const allUsers = await User.find<IUser>({
+        //   $or: [
+        //     { email: { $regex: text, $options: "i" } },
+        //     { username: { $regex: text, $options: "i" } },
+        //   ],
+        // })
+        //   .limit(limitInNumber)
+        //   .skip(skip);
+        // const result = await User.aggregate([
+        //   {
+        //     $match: {
+        //       $or: [
+        //         { email: { $regex: text, $options: "i" } },
+        //         { username: { $regex: text, $options: "i" } },
+        //       ],
+        //     },
+        //   },
+        //   {
+        //     $facet: {
+        //       totalCount: [{ $count: "count" }],
+        //       paginatedResuls: [{ $skip: skip }, { $limit: limitInNumber }],
+        //     },
+        //   },
+        // ]);
+        const result = yield userModel_1.default.aggregate()
+            .project({
+            _id: 1,
+            email: 1,
+            emailPrefix: { $arrayElemAt: [{ $split: ["$email", "@"] }, 0] },
+            username: 1,
+        })
+            .match({
+            $and: [
+                { email: { $ne: (_a = req.user) === null || _a === void 0 ? void 0 : _a.email } },
+                {
+                    $or: [
+                        { emailPrefix: { $regex: text, $options: "i" } },
+                        { username: { $regex: text, $options: "i" } },
+                    ],
+                },
             ],
         })
-            .limit(limitInNumber)
-            .skip(skip);
-        const usersWithoutLoggedInUser = allUsers.filter((user) => { var _a, _b, _c; return ((_a = user === null || user === void 0 ? void 0 : user._id) === null || _a === void 0 ? void 0 : _a.toString()) !== ((_c = (_b = req.user) === null || _b === void 0 ? void 0 : _b._id) === null || _c === void 0 ? void 0 : _c.toString()); });
+            .project({
+            email: 1,
+            username: 1,
+        })
+            .facet({
+            totalCount: [{ $count: "count" }],
+            paginatedResuls: [{ $skip: skip }, { $limit: limitInNumber }],
+        });
+        const paginatedResuls = result[0]
+            .paginatedResuls;
+        const totalCount = ((_c = (_b = result[0].totalCount[0]) === null || _b === void 0 ? void 0 : _b.count) !== null && _c !== void 0 ? _c : 0);
+        const totalPage = totalCount === 0 ? 0 : Math.ceil(totalCount / limitInNumber);
         res.status(200).json({
             status: "success",
-            data: usersWithoutLoggedInUser,
+            currPage: pageInNumber,
+            totalPage,
+            data: paginatedResuls,
         });
     }
     catch (e) {

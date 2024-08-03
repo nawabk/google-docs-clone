@@ -60,14 +60,15 @@ const Signup = () => {
     }
     if (passwordConfirmError || !isFormValid) return;
     setErrorMessage({});
-    const data = await apiCall<SignUpResponse, SignUpRequest>({
+    const response = await apiCall<SignUpResponse, SignUpRequest>({
       url: ENDPOINT.BASE + ENDPOINT.AUTH.SING_UP,
       method: "POST",
       body: {
         ...formValue,
       },
     });
-    if (data) {
+    if (response) {
+      const { data } = response;
       dispatch({
         type: "SET_USER",
         payload: data,

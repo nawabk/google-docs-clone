@@ -69,10 +69,12 @@ export type SignInInput = z.infer<typeof signInInput>;
 
 export const searchUsersSchema = z.object({
   query: z.object({
-    text: z.string({
-      required_error: "Please provided the search text.",
-    }),
-    limit: z.string().optional(),
+    text: z
+      .string({
+        required_error: "Please provided the search text.",
+      })
+      .min(1, { message: "Search text can not be empty." }),
+    limit: z.string().min(1).max(100).optional(),
     page: z.string().optional(),
   }),
 });

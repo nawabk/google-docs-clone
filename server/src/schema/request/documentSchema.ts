@@ -31,9 +31,13 @@ export const shareDocumenSchema = z
       sharedWith: z.array(
         z.object({
           user: z.string(),
+          email: z.string().email(),
           access: z.enum(["Editor", "Viewer"]),
         })
       ),
+      notifyPeople: z.boolean().default(false),
+      notificationMessage: z.string().default(""),
+      documentTitle: z.string(),
     }),
   })
   .merge(documentIdParams);

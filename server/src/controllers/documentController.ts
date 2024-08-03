@@ -8,6 +8,7 @@ import {
   UpdateDocumentNameSchema,
 } from "../schema/request/documentSchema";
 import AppError from "../utils/appError";
+import sendEmail, { EmailType } from "../utils/sendEmail";
 export const createDocument = async (
   req: Request<{}, {}, CreateDocumentSchema["body"]>,
   res: Response,
@@ -97,6 +98,27 @@ export const updateDocumentName = async (
   }
 };
 
+function emailPeopleWithNoticationMessage(
+  users: ShareDocumenSchema["body"]["sharedWith"],
+  notificationMessage: string,
+  documentId: string,
+  documentTitle: string
+) {
+  try {
+    const emails = users.map((user) => user.email);
+    console.log(emails);
+    sendEmail({
+      emailType: EmailType.NOTIFY_PEOPLE_ABOUT_SHARED_DOCUMENT,
+      to: emails[0],
+      documentTitle,
+      documentId,
+      message: notificationMessage,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export const sharedDocument = async (
   req: Request<ShareDocumenSchema["params"], {}, ShareDocumenSchema["body"]>,
   res: Response,
@@ -104,14 +126,26 @@ export const sharedDocument = async (
 ) => {
   try {
     const { documentId } = req.params;
-    const { sharedWith } = req.body;
+    const { sharedWith, notifyPeople, notificationMessage, documentTitle } =
+      req.body;
+    const sharedWithUserIdAndAccess = sharedWith.map((elem) => ({
+      user: elem.user,
+      access: elem.access,
+    }));
+    if (notifyPeople)
+      emailPeopleWithNoticationMessage(
+        sharedWith,
+        notificationMessage,
+        documentId,
+        documentTitle
+      );
     const updatedDocument = await DocumentModel.findByIdAndUpdate(
       { _id: documentId },
-      { $push: { sharedWith: { $each: sharedWith } } }
+      { $push: { sharedWith: { $each: sharedWithUserIdAndAccess } } }
     );
     res.status(201).json({
       type: "success",
-      json: updatedDocument,
+      data: updatedDocument,
     });
   } catch (e) {
     next(e);

@@ -58,10 +58,12 @@ exports.signInInput = zod_1.z.object({
 });
 exports.searchUsersSchema = zod_1.z.object({
     query: zod_1.z.object({
-        text: zod_1.z.string({
+        text: zod_1.z
+            .string({
             required_error: "Please provided the search text.",
-        }),
-        limit: zod_1.z.string().optional(),
+        })
+            .min(1, { message: "Search text can not be empty." }),
+        limit: zod_1.z.string().min(1).max(100).optional(),
         page: zod_1.z.string().optional(),
     }),
 });

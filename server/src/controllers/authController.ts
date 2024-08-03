@@ -10,7 +10,10 @@ import {
   SignInInput,
   VerifyUserInput,
 } from "../schema/request/userSchema";
-import { UserResponse } from "../schema/response/userSchema";
+import {
+  SearchUserResponse,
+  UserResponse,
+} from "../schema/response/userSchema";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/catchAsync";
 import sendEmail, { EmailType } from "../utils/sendEmail";
@@ -21,7 +24,12 @@ export const signup = catchAsync(
     res: Response,
     next
   ) => {
-    const newUser = (await User.create(req.body)) as IUser;
+    const newUser = await User.create<IUser>({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+    });
     const newToken = (await Token.create({ userId: newUser._id })) as IToken;
     const message = `${process.env.CLIENT_URL}/verify_email?userId=${newUser._id}&token=${newToken.token}`;
     sendEmail({
@@ -139,7 +147,7 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
 
 export const searchUsers = async (
   req: Request<{}, {}, {}, SearchUserSchema["query"]>,
-  res: Response,
+  res: Response<SearchUserResponse>,
   next: NextFunction
 ) => {
   try {
@@ -150,20 +158,66 @@ export const searchUsers = async (
       throw new AppError("Please provide limit or page in number.", 400);
     }
     const skip = (pageInNumber - 1) * limitInNumber;
-    const allUsers = await User.find<IUser>({
-      $or: [
-        { email: { $regex: text, $options: "i" } },
-        { username: { $regex: text, $options: "i" } },
-      ],
-    })
-      .limit(limitInNumber)
-      .skip(skip);
-    const usersWithoutLoggedInUser = allUsers.filter(
-      (user) => user?._id?.toString() !== req.user?._id?.toString()
-    );
+    // const allUsers = await User.find<IUser>({
+    //   $or: [
+    //     { email: { $regex: text, $options: "i" } },
+    //     { username: { $regex: text, $options: "i" } },
+    //   ],
+    // })
+    //   .limit(limitInNumber)
+    //   .skip(skip);
+    // const result = await User.aggregate([
+    //   {
+    //     $match: {
+    //       $or: [
+    //         { email: { $regex: text, $options: "i" } },
+    //         { username: { $regex: text, $options: "i" } },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $facet: {
+    //       totalCount: [{ $count: "count" }],
+    //       paginatedResuls: [{ $skip: skip }, { $limit: limitInNumber }],
+    //     },
+    //   },
+    // ]);
+    const result = await User.aggregate()
+      .project({
+        _id: 1,
+        email: 1,
+        emailPrefix: { $arrayElemAt: [{ $split: ["$email", "@"] }, 0] },
+        username: 1,
+      })
+      .match({
+        $and: [
+          { email: { $ne: req.user?.email } },
+          {
+            $or: [
+              { emailPrefix: { $regex: text, $options: "i" } },
+              { username: { $regex: text, $options: "i" } },
+            ],
+          },
+        ],
+      })
+      .project({
+        email: 1,
+        username: 1,
+      })
+      .facet({
+        totalCount: [{ $count: "count" }],
+        paginatedResuls: [{ $skip: skip }, { $limit: limitInNumber }],
+      });
+    const paginatedResuls = result[0]
+      .paginatedResuls as SearchUserResponse["data"];
+    const totalCount = (result[0].totalCount[0]?.count ?? 0) as number;
+    const totalPage =
+      totalCount === 0 ? 0 : Math.ceil(totalCount / limitInNumber);
     res.status(200).json({
       status: "success",
-      data: usersWithoutLoggedInUser,
+      currPage: pageInNumber,
+      totalPage,
+      data: paginatedResuls,
     });
   } catch (e) {
     next(e);

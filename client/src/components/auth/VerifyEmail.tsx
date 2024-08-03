@@ -17,14 +17,13 @@ const VerifyEmail = () => {
     async function verifyEmail() {
       const url =
         ENDPOINT.BASE + ENDPOINT.AUTH.VERIFY.replace("{userId}", userId);
-      const data = await apiCall({
+      await apiCall({
         url,
         method: "PATCH",
         body: {
           token,
         },
       });
-      console.log(data);
     }
     verifyEmail();
   }, [userId, token, apiCall]);

@@ -28,8 +28,12 @@ exports.shareDocumenSchema = zod_1.z
     body: zod_1.z.object({
         sharedWith: zod_1.z.array(zod_1.z.object({
             user: zod_1.z.string(),
+            email: zod_1.z.string().email(),
             access: zod_1.z.enum(["Editor", "Viewer"]),
         })),
+        notifyPeople: zod_1.z.boolean().default(false),
+        notificationMessage: zod_1.z.string().default(""),
+        documentTitle: zod_1.z.string(),
     }),
 })
     .merge(exports.documentIdParams);

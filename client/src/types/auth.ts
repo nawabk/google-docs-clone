@@ -1,4 +1,5 @@
 import { signinValidationRule, signupValidationRule } from "../constants/auth";
+import { GenericField } from "./common";
 
 export type ValidationRule<T = void> = Record<
   keyof T,
@@ -39,11 +40,15 @@ export type SignInRequest = {
   password: string;
 };
 
-export type SignInResponse = {
+export type SignInResponse = GenericField & {
   _id: string;
   username: string;
   email: string;
   isEmailVerified: boolean;
 };
 
-export type UserResponse = SignInResponse;
+export type SearchUserResponse = {
+  _id: string;
+  email: string;
+  username: string;
+};

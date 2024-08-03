@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   APIResponse,
   ErrorResponse,
@@ -12,6 +12,7 @@ type PostAndPutProps<RequestBody> = {
 type Props<RequestBody> =
   | {
       url: string;
+      returnFullResponse?: boolean;
     } & (
       | {
           method?: "GET" | "DELETE";
@@ -27,9 +28,9 @@ function isErrorMessage<T>(
   return "message" in response && response.status === "error";
 }
 
-function isSuccessfullResponse<T>(
+function isSuccessfullResponse<T, IsPaginatedResponse extends boolean = false>(
   response: APIResponse<T>
-): response is SuccessfullResponse<T> {
+): response is SuccessfullResponse<T, IsPaginatedResponse> {
   return "data" in response && response.status === "success";
 }
 
@@ -37,46 +38,115 @@ const useFetch = () => {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
 
-  async function apiCall<ResponseBody, RequestBody = void>(
-    props: Props<RequestBody>
-  ): Promise<SuccessfullResponse<ResponseBody>["data"] | undefined> {
-    const { method, url } = props;
-    try {
-      setStatus("loading");
-      setError("");
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        ...((props.method === "POST" || props.method === "PATCH") && {
-          body: JSON.stringify(props.body),
-        }),
-      });
-      const responseData = (await response.json()) as APIResponse<ResponseBody>;
-      if (response.ok) {
-        setStatus("success");
-        if (isSuccessfullResponse(responseData)) {
-          return responseData.data;
-        }
-      } else {
-        setStatus("error");
-        if (isErrorMessage(responseData)) {
-          setError(responseData.message);
+  const apiCall = useCallback(
+    async <
+      ResponseBody,
+      RequestBody = void,
+      IsPaginatedResponse extends boolean = false
+    >(
+      props: Props<RequestBody>
+    ): Promise<
+      SuccessfullResponse<ResponseBody, IsPaginatedResponse> | undefined
+    > => {
+      const { method, url } = props;
+      try {
+        setStatus("loading");
+        setError("");
+        const response = await fetch(url, {
+          method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          ...((props.method === "POST" || props.method === "PATCH") && {
+            body: JSON.stringify(props.body),
+          }),
+        });
+        const responseData =
+          (await response.json()) as APIResponse<ResponseBody>;
+        if (response.ok) {
+          if (
+            isSuccessfullResponse<ResponseBody, IsPaginatedResponse>(
+              responseData
+            )
+          ) {
+            setStatus("success");
+            return responseData;
+          } else {
+            setStatus("error");
+            setError("Not a successful response!");
+          }
         } else {
-          setError("Something went wrong!");
+          setStatus("error");
+          if (isErrorMessage(responseData)) {
+            setError(responseData.message);
+          } else {
+            setError("Something went wrong!");
+          }
+        }
+      } catch (e) {
+        setStatus("error");
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError("Someting went Wrong!");
         }
       }
-    } catch (e) {
-      setStatus("error");
-      if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError("Someting went Wrong!");
-      }
-    }
-  }
+    },
+    []
+  );
+
+  // async function apiCall<
+  //   ResponseBody,
+  //   RequestBody = void,
+  //   IsPaginatedResponse extends boolean = false
+  // >(
+  //   props: Props<RequestBody>
+  // ): Promise<
+  //   SuccessfullResponse<ResponseBody, IsPaginatedResponse> | undefined
+  // > {
+  //   const { method, url } = props;
+  //   try {
+  //     setStatus("loading");
+  //     setError("");
+  //     const response = await fetch(url, {
+  //       method,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //       ...((props.method === "POST" || props.method === "PATCH") && {
+  //         body: JSON.stringify(props.body),
+  //       }),
+  //     });
+  //     const responseData = (await response.json()) as APIResponse<ResponseBody>;
+  //     if (response.ok) {
+  //       if (
+  //         isSuccessfullResponse<ResponseBody, IsPaginatedResponse>(responseData)
+  //       ) {
+  //         setStatus("success");
+  //         return responseData;
+  //       } else {
+  //         setStatus("error");
+  //         setError("Not a successful response!");
+  //       }
+  //     } else {
+  //       setStatus("error");
+  //       if (isErrorMessage(responseData)) {
+  //         setError(responseData.message);
+  //       } else {
+  //         setError("Something went wrong!");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     setStatus("error");
+  //     if (e instanceof Error) {
+  //       setError(e.message);
+  //     } else {
+  //       setError("Someting went Wrong!");
+  //     }
+  //   }
+  // }
 
   return { status, error, apiCall };
 };

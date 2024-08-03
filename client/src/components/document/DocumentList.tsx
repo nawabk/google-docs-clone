@@ -15,10 +15,11 @@ const DocumentList = () => {
 
   useEffect(() => {
     async function fetchDocumentList() {
-      const documentList = await apiCall<Document[]>({
+      const response = await apiCall<Document[]>({
         url: ENDPOINT.BASE + ENDPOINT.DOCUMENT.GET_ALL,
       });
-      if (documentList) {
+      if (response) {
+        const { data: documentList } = response;
         dispatch({
           type: "SET_DOCUMENT_LIST",
           payload: {

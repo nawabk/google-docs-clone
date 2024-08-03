@@ -10,3 +10,15 @@ export type Document = GenericField & {
   createdBy: string;
   sharedWith: string[];
 };
+
+export enum DocPermission {
+  Viewer = "Viewer",
+  Editor = "Editor",
+}
+
+export type ShareDocumentRequest = {
+  documentTitle: string;
+  notificationMessage: string;
+  notifyPeople: boolean;
+  sharedWith: { user: string; email: string; access: DocPermission }[];
+};

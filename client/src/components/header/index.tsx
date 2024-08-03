@@ -1,7 +1,7 @@
 import googlDocsLogo from "../../assets/google-docs.png";
 import { useDocumentContext } from "../../context/document-context";
 import ShareDoc from "../share-doc";
-import Avatar from "../user-profile/Avatar";
+import UserProfile from "../user-profile";
 
 const Header = () => {
   const { state } = useDocumentContext();
@@ -16,7 +16,7 @@ const Header = () => {
       </div>
       <div className="col-span-1 flex justify-end gap-6 mr-4 items-center">
         {isDocumentPageActive && <ShareDoc />}
-        <Avatar />
+        <UserProfile />
       </div>
     </header>
   );

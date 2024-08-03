@@ -16,11 +16,12 @@ const PrivateRoute = ({ children }: Props) => {
 
   useEffect(() => {
     async function validateUser() {
-      const data = await apiCall<SignInResponse>({
+      const response = await apiCall<SignInResponse>({
         method: "GET",
         url: ENDPOINT.BASE + ENDPOINT.AUTH.VALIDATE,
       });
-      if (data) {
+      if (response) {
+        const { data } = response;
         dispatch({
           type: "SET_USER",
           payload: data,

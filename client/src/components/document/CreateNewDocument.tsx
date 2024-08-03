@@ -15,21 +15,22 @@ const CreateNewDocument = () => {
   const { _id: userId } = state;
   const navigate = useNavigate();
   const createDocumentHandler = async () => {
-    const responseData = await apiCall<Document, CreateDocumentRequest>({
+    const response = await apiCall<Document, CreateDocumentRequest>({
       url: ENDPOINT.BASE + ENDPOINT.DOCUMENT.CREATE,
       method: "POST",
       body: {
         userId,
       },
     });
-    if (responseData) {
+    if (response) {
+      const { data } = response;
       dispatch({
         type: "SET_SELECTED_DOCUMENT",
         payload: {
-          document: responseData,
+          document: data,
         },
       });
-      navigate(`/document/${responseData._id}`);
+      navigate(`/document/${data._id}`);
     }
   };
   return (

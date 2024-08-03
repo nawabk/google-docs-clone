@@ -20,10 +20,11 @@ const Document = () => {
         const url =
           ENDPOINT.BASE +
           ENDPOINT.DOCUMENT.GET.replace("{documentId}", documentId);
-        const document = await apiCall<Document>({
+        const response = await apiCall<Document>({
           url,
         });
-        if (document) {
+        if (response) {
+          const { data: document } = response;
           dispatch({
             type: "SET_SELECTED_DOCUMENT",
             payload: {

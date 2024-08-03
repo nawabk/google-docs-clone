@@ -14,6 +14,7 @@ export const ENDPOINT = {
     GET: "/api/documents/{documentId}",
     UPDATE: "/api/documents/{documentId}",
     GET_ALL: "/api/documents",
+    SHARE: "/api/documents/{documentId}/share",
   },
 };
 

@@ -16,21 +16,40 @@ const resend = new resend_1.Resend(process.env.RESEND_API);
 var EmailType;
 (function (EmailType) {
     EmailType[EmailType["EMAIL_VERIFICATION"] = 0] = "EMAIL_VERIFICATION";
+    EmailType[EmailType["NOTIFY_PEOPLE_ABOUT_SHARED_DOCUMENT"] = 1] = "NOTIFY_PEOPLE_ABOUT_SHARED_DOCUMENT";
 })(EmailType || (exports.EmailType = EmailType = {}));
-function default_1(_a) {
-    return __awaiter(this, arguments, void 0, function* ({ to, message, emailType }) {
+function getEmailVerificationBody(message) {
+    return `<a href=${message}><strong>Click to verify email</strong></a>`;
+}
+function getNotifyPeopleMessageBody(documentTitle, documentId, message) {
+    return `<div>
+     <p>Hey please check the <a href=${process.env
+        .CLIENT_URL}/document/${documentId}>${documentTitle}</a></p>
+     <p>${message}</p>
+  </div>`;
+}
+function default_1(props) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { to, message, emailType } = props;
         try {
             let subject = "";
             let body = "";
             if (emailType === EmailType.EMAIL_VERIFICATION) {
-                subject = getEmailVerificationSubject();
-                const url = "";
-                body = `<a href=${message}><strong>Click to verify email</strong></a>`;
+                subject = "[TypingFight] Email Verification";
+                body = getEmailVerificationBody(message);
             }
-            const data = yield resend.emails.send({
+            else if (emailType === EmailType.NOTIFY_PEOPLE_ABOUT_SHARED_DOCUMENT) {
+                const { documentTitle, documentId } = props;
+                subject = "[TypingFight] Document Shared with You: Please Check";
+                body = getNotifyPeopleMessageBody(documentTitle, documentId, message);
+            }
+            else {
+                throw new Error("Please verify the email type!");
+            }
+            yield resend.emails.send({
                 from: "admin@typing-fight.com",
                 to,
-                subject: "[TypingFight] Email Verification",
+                subject,
                 html: body,
             });
         }
@@ -38,7 +57,4 @@ function default_1(_a) {
             console.log(e);
         }
     });
-}
-function getEmailVerificationSubject() {
-    return "Email verification";
 }

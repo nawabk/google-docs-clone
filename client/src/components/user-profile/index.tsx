@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuthContext } from "../../context/auth-context";
 import useClickOutside from "../../hooks/useClickOutside";
+import Avatar from "../common/Avatar";
 import UserMenu from "./UserMenu";
 
-const Avatar = () => {
+const UserProfile = () => {
   const { state } = useAuthContext();
   const { username, isAuthenticated } = state;
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -15,18 +16,13 @@ const Avatar = () => {
   }, [isClickOutside]);
 
   if (!isAuthenticated) return null;
-  const displayChar = username[0].toUpperCase();
+
   return (
     <div className="relative" ref={ref}>
-      <div
-        className="py-2 px-4 text-center bg-pink-700 text-white rounded-full text-2xl font-bold cursor-pointer"
-        onClick={() => setIsOpen(true)}
-      >
-        {displayChar}
-      </div>
+      <Avatar username={username} onClick={() => setIsOpen(true)} />
       {isOpen && <UserMenu />}
     </div>
   );
 };
 
-export default Avatar;
+export default UserProfile;

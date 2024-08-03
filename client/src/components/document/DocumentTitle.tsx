@@ -19,14 +19,14 @@ const DocumentTitle = () => {
     timer.current = setTimeout(async () => {
       const url =
         ENDPOINT.BASE + ENDPOINT.DOCUMENT.UPDATE.replace("{documentId}", _id);
-      const responseData = await apiCall({
+      const response = await apiCall({
         url,
         method: "PATCH",
         body: {
           name: value,
         },
       });
-      if (responseData) {
+      if (response) {
         dispatch({
           type: "UPDATE_SELECTED_DOCUMENT",
           payload: {

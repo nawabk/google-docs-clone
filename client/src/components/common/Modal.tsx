@@ -9,15 +9,23 @@ type Props = {
   submitButton: string;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  submitHandler: () => void;
 };
-const Modal = ({ heading, submitButton, open, setOpen, children }: Props) => {
+const Modal = ({
+  heading,
+  submitButton,
+  open,
+  setOpen,
+  children,
+  submitHandler,
+}: Props) => {
   return (
     open && (
       <>
         <Backdrop onClick={() => setOpen(false)} />
         {ReactDOM.createPortal(
-          <div className="w-1/4 grid grid-rows-3 grid-cols-2 z-30 absolute left-1/2 -translate-x-1/2 top-1/3 bg-white rounded-xl p-4 align-middle items-center gap-6">
-            <div className="row-span-1 col-span-1">
+          <div className="w-1/4 grid grid-rows-3-auto grid-cols-2 z-30 absolute left-1/2 -translate-x-1/2 top-1/3 bg-white rounded-xl p-4 align-middle items-center gap-4">
+            <div className="row-span-1 col-span-1 w-max">
               <h2 className="text-2xl">{heading}</h2>
             </div>
             <div className="row-span-1 col-start-2 col-span-1 flex justify-end">
@@ -31,7 +39,10 @@ const Modal = ({ heading, submitButton, open, setOpen, children }: Props) => {
               {children}
             </div>
             <div className="row-start-3 row-span-1 col-span-full flex justify-end">
-              <button className="bg-blue-600 hover:bg-blue-500 rounded-2xl px-4 py-2 text-white text-sm">
+              <button
+                className="bg-blue-600 hover:bg-blue-500 rounded-2xl px-4 py-2 text-white text-sm"
+                onClick={submitHandler}
+              >
                 {submitButton}
               </button>
             </div>
